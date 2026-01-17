@@ -1,21 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
+const auth = require("../middleware/auth");
+
 const {
-    createHabit,
-    getHabits,
-    toggleHabit,
-    deleteHabit,
-    updateHabit
-} = require('../controllers/habitController');
+  createHabit,
+  getHabits,
+  toggleHabit,
+  updateHabit,
+  deleteHabit,
+} = require("../controllers/habitController");
 
-
-router.post("/",createHabit)
-router.get("/",getHabits)
-router.patch("/:id/toggle",toggleHabit)
-
-router.delete("/:id", deleteHabit);
-
-router.put("/:id", updateHabit);
+// ALL routes are protected
+router.post("/", auth, createHabit);
+router.get("/", auth, getHabits);
+router.patch("/:id/toggle", auth, toggleHabit);
+router.put("/:id", auth, updateHabit);
+router.delete("/:id", auth, deleteHabit);
 
 module.exports = router;

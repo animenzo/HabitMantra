@@ -1,13 +1,21 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 
-const {getDailyGoals, createDailyGoal, updateDailyGoal, deleteDailyGoal, toggledailyGoal} = require('../controllers/dailyGoalController');
+const auth = require("../middleware/auth");
 
-router.get('/', getDailyGoals);
-router.post('/', createDailyGoal);
-router.patch('/:id', updateDailyGoal);
-router.patch('/:id/toggle',toggledailyGoal);
+const {
+  getDailyGoals,
+  createDailyGoal,
+  updateDailyGoal,
+  deleteDailyGoal,
+  toggleDailyGoal,
+} = require("../controllers/dailyGoalController");
 
-router.delete('/:id', deleteDailyGoal);
+// ALL routes protected
+router.get("/", auth, getDailyGoals);
+router.post("/", auth, createDailyGoal);
+router.patch("/:id/toggle", auth, toggleDailyGoal);
+router.patch("/:id", auth, updateDailyGoal);
+router.delete("/:id", auth, deleteDailyGoal);
 
-module.exports = router
+module.exports = router;

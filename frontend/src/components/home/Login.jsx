@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import API from "../../services/api";
 import { useAuth } from "../../context/AuthContext";
-import { GoogleLogin } from "@react-oauth/google";
+
 
 function Login() {
   const { login } = useAuth();
@@ -18,11 +18,12 @@ function Login() {
     email: "",
     password: "",
   });
-  const [otp, setOtp] = useState("");
-  const [step, setStep] = useState("signup"); // signup | otp
+  
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+
+
   const handleLogin = async (e) => {
     e.preventDefault();
 
@@ -33,25 +34,53 @@ function Login() {
     navigate("/dashboard", { replace: true });
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
+const handleSignup = async (e) => {
+  e.preventDefault();
+  setError("");
+  setLoading(true);
 
-    try {
-      await API.post("/auth/signup", signupData);
-      setStep("otp");
-    } catch (err) {
-      setError(err.response?.data?.message || "Signup failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      navigate("/dashboard", { replace: true });
-    }
-  }, []);
+  try {
+    await API.post("/auth/signup", signupData);
+
+    // auto-login after signup
+    const res = await API.post("/auth/login", {
+      email: signupData.email,
+      password: signupData.password,
+    });
+
+    login(res.data.token, res.data.user);
+    navigate("/dashboard", { replace: true });
+
+  } catch (err) {
+    setError(
+      err.response?.data?.message ||
+      err.message ||
+      "Signup failed"
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+  const handleSignupChange = (e) => {
+  setSignupData({
+    ...signupData,
+    [e.target.name]: e.target.value,
+  });
+};
+
+const handleLoginChange = (e) => {
+  setLoginData({
+    ...loginData,
+    [e.target.name]: e.target.value,
+  });
+};
+  // useEffect(() => {
+  //   if (localStorage.getItem("token")) {
+  //     navigate("/dashboard", { replace: true });
+  //   }
+  // }, []);
   const [isRightPanelActive, setIsRightPanelActive] = useState(false);
 
   const handleSignUpClick = () => {
@@ -61,30 +90,15 @@ function Login() {
   const handleSignInClick = () => {
     setIsRightPanelActive(false);
   };
-  const handleVerifyOtp = async () => {
-    setError("");
-    setLoading(true);
-
-    try {
-      const res = await API.post("/auth/verify-otp", {
-        email: signupData.email,
-        otp,
-      });
-
-      login(res.data.token, res.data.user);
-      navigate("/dashboard", { replace: true });
-    } catch {
-      setError("Invalid or expired OTP");
-    } finally {
-      setLoading(false);
-    }
-  };
+ 
 
   return (
     <div className="flex flex-col justify-center items-center bg-linear-to-br from-green-100 to-green-300 font-poppins overflow-hidden w-full lg:h-[80vh] p-4 md:p-0">
-      <span className="block py-1 px-3 rounded-full bg-red-500/10 border border-red-500/20  text-red-500 text-sm font-semibold tracking-widest mb-1">
-        {error && <p className="">{error}</p>}
-      </span>
+     {error && (
+  <span className="block py-1 px-3 rounded-full bg-red-500/10 border border-red-500/20 text-red-500 text-sm font-semibold tracking-widest mb-1">
+    <p>{error}</p>
+  </span>
+)}
       <div
         className={`bg-white rounded-2xl md:rounded-xl shadow-xl md:shadow-2xl relative overflow-hidden w-full max-w-100 md:max-w-3xl min-h-150 md:min-h-120 transition-all duration-300 ${
           isRightPanelActive ? "right-panel-active" : ""
@@ -112,21 +126,7 @@ function Login() {
               Create Account
             </h1>
             <div className="social-container my-3 md:my-5">
-              <GoogleLogin
-                onSuccess={async (res) => {
-                  try {
-                    const response = await API.post("/auth/google", {
-                      credential: res.credential,
-                    });
-
-                    login(response.data.token, response.data.user);
-                    navigate("/dashboard", { replace: true });
-                  } catch {
-                    setError("Google login failed");
-                  }
-                }}
-                onError={() => setError("Google login failed")}
-              />
+            
             </div>
             <span className="text-xs">or use your email for registration</span>
             <input
@@ -151,9 +151,9 @@ function Login() {
               <input
                 type={showPassword ? "text" : "password"}
                 placeholder="Password"
-                value={loginData.password}
+                value={signupData.password}
                 onChange={(e) =>
-                  setLoginData({ ...loginData, password: e.target.value })
+                  setSignupData({ ...signupData, password: e.target.value })
                 }
                 className="bg-gray-100 border-none p-3 my-2 w-full rounded transition-colors duration-300 focus:bg-green-50 focus:outline-none focus:ring-2 focus:ring-green-500"
               />
@@ -181,27 +181,9 @@ function Login() {
               type="submit"
               disabled={loading}
             >
-              {loading ? "Sending OTP..." : "Sign Up"}
+              Sign Up
             </button>
-            {step === "otp" && (
-              <>
-                <input
-                  placeholder="Enter OTP"
-                  value={otp}
-                  onChange={(e) => setOtp(e.target.value)}
-                  className="bg-gray-100 p-3 my-2 w-full rounded"
-                />
-
-                <button
-                  type="button"
-                  onClick={handleVerifyOtp}
-                  disabled={loading}
-                  className="rounded-full bg-green-600 cursor-pointer text-white py-3 px-11"
-                >
-                  {loading ? "Verifying..." : "Verify OTP"}
-                </button>
-              </>
-            )}
+           
 
             {/* Mobile Toggle */}
             <p className="md:hidden text-xs mt-6">
@@ -236,23 +218,7 @@ function Login() {
             </div> */}
 
             <h1 className="font-bold m-0 text-green-800 text-2xl">Sign in</h1>
-            <div className="social-container my-3 md:my-5">
-              <GoogleLogin
-                onSuccess={async (res) => {
-                  try {
-                    const response = await API.post("/auth/google", {
-                      credential: res.credential,
-                    });
-
-                    login(response.data.token, response.data.user);
-                    navigate("/dashboard", { replace: true });
-                  } catch {
-                    setError("Google login failed");
-                  }
-                }}
-                onError={() => setError("Google login failed")}
-              />
-            </div>
+           
             <span className="text-xs">or use your account</span>
             <input
               type="email"

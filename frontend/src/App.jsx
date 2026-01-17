@@ -1,4 +1,4 @@
-import { Routes, Route, useLocation, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 
 import Dashboard from "./pages/Dashboard";
@@ -7,22 +7,17 @@ import NotesPage from "./pages/NotesPage";
 import Login from "./components/home/Login";
 import PrivateRoute from "./routes/PrivateRoutes";
 import Home from "./pages/Home";
+import { useAuth } from "./context/AuthContext";
 
 function App() {
-  const location = useLocation();
-  const isAuthenticated = !!localStorage.getItem("token");
-
-  // ❌ Hide Navbar on auth routes
-  const hideNavbarRoutes = ["/login","/home"];
-  const shouldShowNavbar =
-    isAuthenticated && !hideNavbarRoutes.includes(location.pathname);
+  const { isAuthenticated } = useAuth();
 
   return (
     <>
-      {shouldShowNavbar && <Navbar />}
+      {isAuthenticated && <Navbar />}
 
       <Routes>
-        {/* 🔁 ROOT REDIRECT */}
+        {/* ROOT */}
         <Route
           path="/"
           element={
@@ -34,11 +29,11 @@ function App() {
           }
         />
 
-        {/* 🔐 AUTH */}
+        {/* PUBLIC */}
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
-        {/* 🔒 PROTECTED */}
+        {/* PROTECTED */}
         <Route
           path="/dashboard"
           element={
@@ -65,6 +60,9 @@ function App() {
             </PrivateRoute>
           }
         />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </>
   );

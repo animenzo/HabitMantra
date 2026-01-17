@@ -1,40 +1,69 @@
 import axios from "axios";
 
+/**
+ * Main API instance (for normal requests)
+ */
 const API = axios.create({
-  baseURL: "https://habit-mantra-back-euvjx6yr7-animenzos-projects.vercel.app",
-  withCredentials: true // 🔥 REQUIRED for refresh cookies
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
-// attach access token
-API.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+/**
+ * Separate instance for refresh token
+ * (NO interceptors to avoid infinite loop)
+ */
+const refreshAPI = axios.create({
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
-// refresh token logic
+/**
+ * Attach access token on every request
+ */
+API.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
+
+/**
+ * Handle expired token (401)
+ */
 API.interceptors.response.use(
-  res => res,
-  async err => {
-    const original = err.config;
+  (response) => response,
+  async (error) => {
+    const originalRequest = error.config;
 
-    if (err.response?.status === 401 && !original._retry) {
-      original._retry = true;
+    // Only try refresh once
+    if (
+      error.response?.status === 401 &&
+      !originalRequest._retry
+    ) {
+      originalRequest._retry = true;
 
       try {
-        const res = await API.post("/auth/refresh");
-        localStorage.setItem("token", res.data.token);
-        original.headers.Authorization = `Bearer ${res.data.token}`;
-        return API(original);
-      } catch {
+        const res = await refreshAPI.post("/auth/refresh");
+
+        const newToken = res.data.token;
+        localStorage.setItem("token", newToken);
+
+        originalRequest.headers.Authorization = `Bearer ${newToken}`;
+        return API(originalRequest);
+
+      } catch (refreshError) {
+        // Refresh failed → logout
         localStorage.removeItem("token");
-        window.location.href = "/login";
+        localStorage.removeItem("user");
+
+        window.location.href = "/home";
+        return Promise.reject(refreshError);
       }
     }
 
-    return Promise.reject(err);
+    return Promise.reject(error);
   }
 );
 

@@ -1,7 +1,11 @@
-const DailyGoal = require("../models/DailyGoals")
+const mongoose = require("mongoose");
 const Habit = require("../models/Habit");
+const DailyGoal = require("../models/DailyGoals");
 
-
+/**
+ * WEEKLY ANALYTICS
+ * ?weekStart=YYYY-MM-DD
+ */
 exports.getWeeklyAnalytics = async (req, res) => {
   try {
     const { weekStart } = req.query;
@@ -18,27 +22,30 @@ exports.getWeeklyAnalytics = async (req, res) => {
 
     const data = await Habit.aggregate([
       {
+        // 🔑 USER FILTER (MOST IMPORTANT)
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user.id),
+        },
+      },
+      {
         $project: {
-          progressArray: { $objectToArray: "$progress" }
-        }
+          progressArray: { $objectToArray: "$progress" },
+        },
       },
       { $unwind: "$progressArray" },
       {
         $match: {
           "progressArray.v": true,
-          "progressArray.k": {
-            $gte: startStr,
-            $lt: endStr
-          }
-        }
+          "progressArray.k": { $gte: startStr, $lt: endStr },
+        },
       },
       {
         $group: {
           _id: "$progressArray.k",
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     res.status(200).json(data);
@@ -47,7 +54,10 @@ exports.getWeeklyAnalytics = async (req, res) => {
   }
 };
 
-
+/**
+ * YEARLY ANALYTICS
+ * ?year=YYYY
+ */
 exports.getYearlyAnalytics = async (req, res) => {
   try {
     const { year } = req.query;
@@ -57,26 +67,29 @@ exports.getYearlyAnalytics = async (req, res) => {
 
     const data = await Habit.aggregate([
       {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user.id),
+        },
+      },
+      {
         $project: {
-          progressArray: { $objectToArray: "$progress" }
-        }
+          progressArray: { $objectToArray: "$progress" },
+        },
       },
       { $unwind: "$progressArray" },
       {
         $match: {
           "progressArray.v": true,
-          "progressArray.k": { $regex: `^${year}` }
-        }
+          "progressArray.k": { $regex: `^${year}` },
+        },
       },
       {
         $group: {
-          _id: {
-            $substr: ["$progressArray.k", 0, 7] // YYYY-MM
-          },
-          count: { $sum: 1 }
-        }
+          _id: { $substr: ["$progressArray.k", 0, 7] }, // YYYY-MM
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     res.json(data);
@@ -85,13 +98,14 @@ exports.getYearlyAnalytics = async (req, res) => {
   }
 };
 
-
-
+/**
+ * HABIT ANALYTICS (completion rate per habit)
+ */
 exports.getHabitAnalytics = async (req, res) => {
   try {
-    const habits = await Habit.find();
+    const habits = await Habit.find({ user: req.user.id });
 
-    const result = habits.map(h => {
+    const result = habits.map((h) => {
       const total = h.progress ? h.progress.size : 0;
       const completed = h.progress
         ? [...h.progress.values()].filter(Boolean).length
@@ -102,7 +116,7 @@ exports.getHabitAnalytics = async (req, res) => {
         name: h.name,
         completionRate: total === 0 ? 0 : Math.round((completed / total) * 100),
         streak: h.streak,
-        bestStreak: h.bestStreak
+        bestStreak: h.bestStreak,
       };
     });
 
@@ -112,10 +126,13 @@ exports.getHabitAnalytics = async (req, res) => {
   }
 };
 
-
+/**
+ * MONTHLY ANALYTICS
+ * ?year=YYYY&month=MM
+ */
 exports.getMonthlyAnalytics = async (req, res) => {
   try {
-    const { year, month } = req.query; // month = 01..12
+    const { year, month } = req.query;
     if (!year || !month) {
       return res.status(400).json({ message: "Year and month required" });
     }
@@ -124,33 +141,29 @@ exports.getMonthlyAnalytics = async (req, res) => {
 
     const data = await Habit.aggregate([
       {
-        // 1️⃣ convert Map → array
-        $project: {
-          progressArray: { $objectToArray: "$progress" }
-        }
-      },
-      { 
-        // 2️⃣ flatten dates
-        $unwind: "$progressArray" 
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user.id),
+        },
       },
       {
-        // 3️⃣ only completed days in that month
+        $project: {
+          progressArray: { $objectToArray: "$progress" },
+        },
+      },
+      { $unwind: "$progressArray" },
+      {
         $match: {
           "progressArray.v": true,
-          "progressArray.k": { $regex: `^${prefix}` }
-        }
+          "progressArray.k": { $regex: `^${prefix}` },
+        },
       },
       {
-        // 4️⃣ group by date
         $group: {
           _id: "$progressArray.k",
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { 
-        // 5️⃣ optional sorting
-        $sort: { _id: 1 } 
-      }
+      { $sort: { _id: 1 } },
     ]);
 
     res.json(data);
@@ -159,32 +172,39 @@ exports.getMonthlyAnalytics = async (req, res) => {
   }
 };
 
-
-
+/**
+ * HEATMAP DATA
+ * ?year=YYYY
+ */
 exports.getHeatmapData = async (req, res) => {
   try {
     const { year } = req.query;
 
     const data = await Habit.aggregate([
       {
+        $match: {
+          user: new mongoose.Types.ObjectId(req.user.id),
+        },
+      },
+      {
         $project: {
-          progressArray: { $objectToArray: "$progress" }
-        }
+          progressArray: { $objectToArray: "$progress" },
+        },
       },
       { $unwind: "$progressArray" },
       {
         $match: {
           "progressArray.v": true,
-          "progressArray.k": { $regex: `^${year}` }
-        }
+          "progressArray.k": { $regex: `^${year}` },
+        },
       },
       {
         $group: {
           _id: "$progressArray.k",
-          count: { $sum: 1 }
-        }
+          count: { $sum: 1 },
+        },
       },
-      { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
     ]);
 
     res.json(data);
@@ -193,11 +213,13 @@ exports.getHeatmapData = async (req, res) => {
   }
 };
 
-
+/**
+ * COMPARE MONTHLY ANALYTICS
+ * ?year=YYYY&month=MM
+ */
 exports.compareMonthlyAnalytics = async (req, res) => {
   try {
     const { year, month } = req.query;
-
     if (!year || !month) {
       return res.status(400).json({ message: "Year and month required" });
     }
@@ -209,8 +231,9 @@ exports.compareMonthlyAnalytics = async (req, res) => {
     const totalDays = endDate;
 
     const completedDays = await DailyGoal.countDocuments({
+      user: req.user.id,
       completed: true,
-      date: { $gte: start, $lte: end }
+      date: { $gte: start, $lte: end },
     });
 
     const completionRate = Math.round(
@@ -222,23 +245,23 @@ exports.compareMonthlyAnalytics = async (req, res) => {
       month,
       completedDays,
       totalDays,
-      completionRate
+      completionRate,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-
-
+/**
+ * SMART INSIGHTS (USER ONLY)
+ */
 exports.getSmartInsights = async (req, res) => {
   try {
-    const habits = await Habit.find();
+    const habits = await Habit.find({ user: req.user.id });
 
     const dateSet = new Set();
 
-    habits.forEach(h => {
+    habits.forEach((h) => {
       h.progress?.forEach((value, date) => {
         if (value === true) dateSet.add(date);
       });
@@ -248,7 +271,6 @@ exports.getSmartInsights = async (req, res) => {
       return res.json({ insights: [] });
     }
 
-    // weekday analysis
     const weekdayMap = {
       Sunday: 0,
       Monday: 0,
@@ -256,65 +278,32 @@ exports.getSmartInsights = async (req, res) => {
       Wednesday: 0,
       Thursday: 0,
       Friday: 0,
-      Saturday: 0
+      Saturday: 0,
     };
 
-    [...dateSet].forEach(date => {
-      const day = new Date(date).toLocaleString("en-US", {
-        weekday: "long"
-      });
+    [...dateSet].forEach((date) => {
+      const day = new Date(date).toLocaleString("en-US", { weekday: "long" });
       weekdayMap[day]++;
     });
 
-    const bestDay = Object.entries(weekdayMap)
-      .sort((a, b) => b[1] - a[1])[0];
+    const bestDay = Object.entries(weekdayMap).sort((a, b) => b[1] - a[1])[0];
 
     const insights = [
       {
         type: "weekday",
-        message: `You are most productive on ${bestDay[0]}s.`
-      }
+        message: `You are most productive on ${bestDay[0]}s.`,
+      },
     ];
-    const monthMap = {};
 
-    [...dateSet].forEach(date => {
-      const d = new Date(date);
-      const key = `${d.getFullYear()}-${d.getMonth()}`;
-      monthMap[key] = (monthMap[key] || 0) + 1;
-    });
-
-    const sortedMonths = Object.entries(monthMap).sort(
-      (a, b) => b[1] - a[1]
-    );
-
-    if (sortedMonths.length > 1) {
-      const [best, second] = sortedMonths;
-
-      const percent = Math.round(
-        ((best[1] - second[1]) / second[1]) * 100
-      );
-
-      const bestDate = new Date(
-        best[0].split("-")[0],
-        best[0].split("-")[1]
-      );
-
-      insights.push({
-        type: "month",
-        message: `${bestDate.toLocaleString("default", {
-          month: "long"
-        })} was your best month (+${percent}%).`
-      });
-    }
     if (dateSet.size < 10) {
       insights.push({
         type: "warning",
-        message: "Your consistency is low. Try completing habits daily."
+        message: "Your consistency is low. Try completing habits daily.",
       });
     } else {
       insights.push({
         type: "positive",
-        message: "You are building strong consistency. Keep going!"
+        message: "You are building strong consistency. Keep going!",
       });
     }
 
