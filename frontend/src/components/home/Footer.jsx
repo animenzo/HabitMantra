@@ -7,10 +7,10 @@ const Footer = () => (
         <div className="bg-slate-900 p-1.5 rounded text-white">
           <Check size={16} strokeWidth={3} />
         </div>
-        <span className="font-bold text-slate-900">HabitFlow</span>
+        <span className="font-bold text-slate-900">Habitmantra</span>
       </div>
       <div className="text-slate-500 text-sm">
-        © 2024 HabitFlow Inc. All rights reserved.
+        © 2025 HabitMantra Inc. All rights reserved.
       </div>
       <div className="flex gap-6 text-slate-400">
         <a href="#" className="hover:text-indigo-600 transition-colors">Twitter</a>
