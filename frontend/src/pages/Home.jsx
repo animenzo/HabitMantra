@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import Nav from "../components/home/Nav";
 import Hero from "../components/home/Hero";
@@ -6,6 +6,7 @@ import Journey from "../components/home/Journey";
 import HowItWorks from "../components/home/HowItWorks";
 import Login from "../components/home/Login";
 import Footer from "../components/home/Footer";
+import { useNavigate } from "react-router-dom";
 const styleTag = `
   @keyframes float {
     0% { transform: translateY(0px); }
@@ -74,7 +75,12 @@ const styleTag = `
 `;
 export default function Home() {
   const [open, setOpen] = useState(false);
-
+  const navigate = useNavigate();
+useEffect(() => {
+  if (localStorage.getItem("token")) {
+    navigate("/dashboard", { replace: true });
+  }
+}, []);
   return (
     <div className="bg-linear-to-br from-indigo-50 via-purple-50 to-pink-50 min-h-screen">
       <style>{styleTag}</style>

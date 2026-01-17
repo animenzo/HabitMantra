@@ -6,13 +6,14 @@ import Profile from "./pages/Profile";
 import NotesPage from "./pages/NotesPage";
 import Login from "./components/home/Login";
 import PrivateRoute from "./routes/PrivateRoutes";
+import Home from "./pages/Home";
 
 function App() {
   const location = useLocation();
   const isAuthenticated = !!localStorage.getItem("token");
 
   // ❌ Hide Navbar on auth routes
-  const hideNavbarRoutes = ["/login"];
+  const hideNavbarRoutes = ["/login","/home"];
   const shouldShowNavbar =
     isAuthenticated && !hideNavbarRoutes.includes(location.pathname);
 
@@ -28,12 +29,13 @@ function App() {
             isAuthenticated ? (
               <Navigate to="/dashboard" replace />
             ) : (
-              <Navigate to="/login" replace />
+              <Navigate to="/home" replace />
             )
           }
         />
 
         {/* 🔐 AUTH */}
+        <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
 
         {/* 🔒 PROTECTED */}
