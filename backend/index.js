@@ -28,11 +28,16 @@ app.use(cookieParser());
 // CORS (🔥 REQUIRED for cookies)
 app.use(
   cors({
-    origin: process.env.FRONTEND_URL,
-    credentials: true
+    origin:["https://habit-mantra-dee3x3xbm-animenzos-projects.vercel.app",
+      "https://habit-mantra.vercel.app",
+      "http://localhost:5173"
+    ], 
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"]
   })
 );
-
+app.options("*", cors());
 /* ---------------- ROUTES ---------------- */
 
 // Auth (PUBLIC)
