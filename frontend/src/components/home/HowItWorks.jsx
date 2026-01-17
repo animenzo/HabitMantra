@@ -4,7 +4,7 @@ import RevealOnScroll from "./RevealOnScroll";
 export default function HowItWorks() {
   const steps = [
     { title: "Add Your Habit", desc: "Choose from our preset library or create your own custom habit to track.", icon: "🎯" },
-    { title: "Set Reminders", desc: "Get gentle nudges at the right time so you never break the chain.", icon: "⏰" },
+    { title: "Make Notes", desc: "No need make text file in your computer since you can forgete them , make it here", icon: "./" },
     { title: "Mark Complete", desc: "One tap to log your progress. Feel the dopamine hit of completion.", icon: "✅" },
     { title: "Review Analytics", desc: "See your consistency rate and longest streaks over time.", icon: "📊" },
   ];

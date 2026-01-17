@@ -1,28 +1,22 @@
 import RevealOnScroll from "./RevealOnScroll";
 import { 
   Check, 
+  Edit, 
   Flame, 
-  Calendar, 
-  Clock, 
+ 
   Plus, 
   TrendingUp, 
-  Shield, 
-  Zap, 
-  X, 
-  ArrowRight,
-  Mail,
-  Lock,
-  User,
-  PartyPopper
+
 } from 'lucide-react';
 
 export default function Journey() {
-  const items = [
-    { title: "Create Habits", desc: "Set clear, actionable goals in seconds." },
-    { title: "Track Progress", desc: "Tick off tasks with satisfying motion." },
-    { title: "Build Streaks", desc: "Watch your streak flame grow daily." },
-    { title: "Visual Insights", desc: "Beautiful charts to visualize growth." },
-  ];
+  // const items = [
+  //   { title: "Create Habits", desc: "Set clear, actionable goals in seconds." },
+  //   { title: "Track Progress", desc: "Tick off tasks with satisfying motion." },
+  //   { title: "Build Streaks", desc: "Watch your streak flame grow daily." },
+  //   { title: "Visual Insights", desc: "Beautiful charts to visualize growth." },
+  //  ,
+  // ];
 
   return (
      <section className="py-20 px-6 max-w-7xl mx-auto">
@@ -36,7 +30,9 @@ export default function Journey() {
           { title: "Create Habits", icon: Plus, color: "blue", desc: "Set clear, actionable goals in seconds." },
           { title: "Track Progress", icon: Check, color: "green", desc: "Tick off tasks with satisfying micro-interactions." },
           { title: "Build Streaks", icon: Flame, color: "orange", desc: "Watch your streak flame grow brighter daily." },
-          { title: "Visual Insights", icon: TrendingUp, color: "purple", desc: "Beautiful charts to visualize your growth." }
+          { title: "Visual Insights", icon: TrendingUp, color: "purple", desc: "Beautiful charts to visualize your growth." },
+           { title: "Create Notes",icon: Edit,color:"blue", desc:"Manage Notes and your items effeciently." },
+           { title: "Daily/ Weekly Goals",icon: Edit,color:"blue", desc:"Set your priority goals that you have." }
         ].map((item, index) => (
           <RevealOnScroll key={index} delay={index * 150}>
             <div className="glass-card p-8 rounded-3xl h-full hover:-translate-y-2 transition-transform duration-300">
