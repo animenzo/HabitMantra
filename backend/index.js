@@ -28,7 +28,7 @@ app.use(cookieParser());
 // CORS (🔥 REQUIRED for cookies)
 app.use(
   cors({
-    origin:["https://habit-mantra-dee3x3xbm-animenzos-projects.vercel.app",
+    origin:["https://habit-mantra-dee3x3xbm-animenzos-projects.vercel.app/",
       "https://habit-mantra.vercel.app",
       "http://localhost:5173"
     ], 
@@ -50,18 +50,33 @@ app.use("/analytics", analyticsRoutes);
 app.use("/notes", notesRoutes);
 
 /* ---------------- DATABASE ---------------- */
-
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("Connected to MongoDB"))
-  .catch((err) => console.error("DB error:", err));
-
+let isConnected
+async function connectDB() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+     isConnected = true;
+    console.log("MongoDB connected");
+  } catch (error) {
+    console.log("MongoDB connection error:", error);
+  }
+}
+app.use((req, res, next) => {
+  if(!isConnected){
+    connectDB();
+  }
+  next
+})
 /* ---------------- SERVER ---------------- */
 app.get("/",(req,res)=>{
   res.send("Habit Tracker API is running");
 })
 const PORT = process.env.PORT || 5000;
 
-app.listen(PORT, () => {
+app.listen(PORT,"0.0.0.0", () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app;
