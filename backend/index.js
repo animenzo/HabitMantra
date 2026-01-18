@@ -51,25 +51,17 @@ app.use("/notes", notesRoutes);
 
 
 /* ---------------- DATABASE ---------------- */
-let isConnected
+
 async function connectDB() {
   try {
-    await mongoose.connect(process.env.MONGO_URI, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    });
-     isConnected = true;
+    await mongoose.connect(process.env.MONGO_URI)
+     
     console.log("MongoDB connected");
   } catch (error) {
     console.log("MongoDB connection error:", error);
   }
 }
-app.use((req, res, next) => {
-  if(!isConnected){
-    connectDB();
-  }
-  next
-})
+connectDB();
 /* ---------------- SERVER ---------------- */
 app.get("/",(req,res)=>{
   res.send("Habit Tracker API is running");
