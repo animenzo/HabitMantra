@@ -49,6 +49,7 @@ app.use("/daily-goals", dailyGoalRoutes);
 app.use("/analytics", analyticsRoutes);
 app.use("/notes", notesRoutes);
 
+
 /* ---------------- DATABASE ---------------- */
 let isConnected
 async function connectDB() {
@@ -73,10 +74,10 @@ app.use((req, res, next) => {
 app.get("/",(req,res)=>{
   res.send("Habit Tracker API is running");
 })
-const PORT = process.env.PORT || 5000;
+// const PORT = process.env.PORT || 5000;
 
-app.listen(PORT,"0.0.0.0", () => {
-  console.log(`Server running on port ${PORT}`);
-});
+// app.listen(PORT,"0.0.0.0", () => {
+//   console.log(`Server running on port ${PORT}`);
+// });
 
 module.exports = app;
