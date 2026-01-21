@@ -1,322 +1,109 @@
-🧠 HabitMantra – MERN Habit Tracker & Notes Platform
+# 🧠 HabitMantra – MERN Habit Tracker & Notes Platform
 
-“HabitMantra is a full-stack MERN application designed to help users build habits consistently while tracking their progress visually.
-It includes secure authentication, habit analytics, a GitHub-style heatmap, and a Trello-like notes system with drag-and-drop functionality.
-The project focuses on real-world problems like user retention, data visualization, and secure access control.”
+![MERN Stack](https://img.shields.io/badge/MERN-Full%20Stack-success)
+![Status](https://img.shields.io/badge/Status-Production%20Ready-blue)
+![License](https://img.shields.io/badge/License-MIT-green)
 
-🏗️ Architecture Explanation
+> **HabitMantra** is a full-stack application designed to help users build habits consistently while tracking their progress visually. It combines powerful habit analytics with a Trello-style productivity system, focusing on real-world problems like user retention, data visualization, and secure access control.
 
-“The frontend is built with React and Tailwind CSS, while the backend uses Node.js, Express, and MongoDB.
-The application follows a clean separation of concerns — controllers, routes, middleware, and services on the backend, and reusable components, contexts, and utilities on the frontend.”
+---
 
-🔐 Authentication (Important Interview Topic)
+## 🚀 Live Demo
 
-“I implemented a production-grade authentication system using JWT with both access and refresh tokens.
-Users can sign up using email and password, verify their account via OTP sent to email, or sign in using Google OAuth.
-Protected routes like Dashboard, Notes, and Profile are guarded using a PrivateRoute component and backend middleware.”
+- **Frontend:** [https://habit-mantra.vercel.app](https://habit-mantra.vercel.app)
+- **Backend API:** [https://your-app-name.onrender.com](https://your-app-name.onrender.com) _(Replace with actual URL)_
 
-Key points to mention:
+---
 
-OTP verification via email
+## ✨ Key Features
 
-Google OAuth
+### 🔐 Authentication & Security (Production Grade)
+- **Hybrid Login:** Email/Password (JWT) & Google OAuth 2.0.
+- **OTP Verification:** Secure email verification flows using Nodemailer.
+- **Token Management:** Access & Refresh token rotation system for secure sessions.
+- **Security:** Rate limiting, Helmet headers, CORS policies, and secure cookies.
+- **Protected Routes:** Middleware guards for Dashboard, Notes, and Profile.
 
-Refresh tokens stored securely
+### 📊 Habit Tracking & Analytics
+- **Visual Analytics:** Weekly, Monthly, and Yearly charts using Chart.js.
+- **GitHub-Style Heatmap:** A standout feature visualizing consistency over the entire year (dynamically rendered).
+- **Time Travel:** Navigate previous/next weeks and compare monthly performance.
+- **Smart Summaries:** Backend aggregation pipelines generate insights.
 
-Rate limiting on auth routes
+### 🗂️ Notes & Productivity Canvas
+- **Trello-like Interface:** Folder → File → Card → Block hierarchy.
+- **Drag-and-Drop:** Built with `@dnd-kit` for moving blocks across cards.
+- **Global Search:** Auto-scrolls and highlights blocks, cards, or files.
+- **Rich Content:** Link detection and real-time state synchronization.
 
-Logout & session handling
+### 🎨 UI/UX Design
+- **Glassmorphism:** Modern UI with Tailwind CSS.
+- **Responsive:** Fully optimized for Mobile, Tablet, and Desktop.
+- **Interactivity:** Smooth animations and micro-interactions.
 
-📊 Habit Tracking & Analytics
+---
 
-“Users can create habits and mark them as completed daily.
-This data is aggregated on the backend using MongoDB aggregation pipelines to generate weekly, monthly, and yearly analytics.”
+## 🧱 Tech Stack
 
-Mention confidently:
+| Domain | Technologies |
+| :--- | :--- |
+| **Frontend** | React.js, React Router v6, Tailwind CSS, Context API, Chart.js, DND Kit, Axios |
+| **Backend** | Node.js, Express.js, Mongoose, Nodemailer, Google Auth Library |
+| **Database** | MongoDB Atlas (Aggregation Pipelines) |
+| **Security** | JWT (Access/Refresh), BCrypt, Helmet, Express-Rate-Limit, CORS |
+| **Deployment** | Vercel (Frontend), Render (Backend) |
 
-Weekly / Monthly / Yearly charts
+---
 
-Bar & line charts
+## 🏗️ Architecture
 
-Previous / next navigation
+The application follows a **clean separation of concerns**:
+- **Backend:** Organized into Controllers, Routes, Middleware, Services, and Utils.
+- **Frontend:** Modularized into Components, Contexts, Pages, and Services.
 
-Heatmap visualization
+**Security Logic:**
+Passwords are hashed using `bcrypt`. APIs are protected using a custom middleware that validates JWTs. If an access token expires, the system attempts to use a secure HTTP-only refresh token to maintain the user's session without forcing a logout.
 
-🔥 Heatmap Feature (Stand-out Point)
+---
 
-“One unique feature is a GitHub-style activity heatmap that visualizes habit consistency over time.
-Each month dynamically renders the exact number of days, with spacing between months, similar to LeetCode or GitHub contributions.”
+## ⚙️ Environment Variables
 
-This shows:
+To run this project locally, you will need to add the following environment variables to your `.env` files.
 
-Attention to detail
+**Backend (`/backend/.env`)**
+```env
+PORT=5000
+MONGO_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+EMAIL_USER=your_email_address
+EMAIL_PASS=your_email_app_password
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+CLIENT_URL=http://localhost:5173
 
-UI logic
+Endpoint,Method,Description
+/auth/signup,POST,Register user and trigger OTP
+/auth/verify-otp,POST,Verify email via OTP
+/auth/login,POST,Login & issue Access/Refresh tokens
+/analytics/weekly,GET,Fetch aggregated weekly habit data
+/analytics/heatmap,GET,Fetch yearly activity for heatmap
+/notes/search,GET,Global search across all notes
+/notes/cards,CRUD,Manage drag-and-drop cards
 
-Date handling skills
-
-📝 Notes & Drag-and-Drop Canvas
-
-“I also built a Trello-like notes system where users can organize content into folders, files, cards, and blocks.
-Blocks can be dragged and dropped across cards using DnD Kit, with real-time state updates and backend synchronization.”
-
-Extra brownie points:
-
-Global search across notes
-
-Auto-scroll & highlight on search
-
-Link detection inside notes
-
-🎨 UI / UX Design
-
-“The UI uses glassmorphism and smooth animations, especially in the authentication flow.
-The entire app is fully responsive and mobile-friendly, including charts and drag-and-drop layouts.”
-
-🧪 Security & Best Practices
-
-“I added multiple security layers including Helmet, CORS configuration, rate limiting for OTP and login, and protected APIs using JWT middleware.”
-
-🚀 Deployment
-
-“The frontend is deployed on Vercel, the backend on Render, and MongoDB Atlas is used for the database.
-I handled CORS issues, environment variables, and production deployment constraints.”
-
-The project focuses on real-world architecture, authentication security, analytics visualization, and smooth UX, making it a production-ready personal productivity tool.
-
-🚀 Live Demo
-
-🔗 Frontend: https://habit-mantra.vercel.app
-
-🔗 Backend API: https://<your-backend>.onrender.com
-
-✨ Key Features
-🔐 Authentication & Security
-
-Email + Password authentication (JWT based)
-
-OTP verification via email during signup
-
-Forgot password with secure reset flow
-
-Google Sign-In (OAuth 2.0)
-
-Access & Refresh token system
-
-Protected routes (Dashboard, Notes, Profile)
-
-Logout with token invalidation
-
-Rate-limiting for auth & OTP endpoints
-
-Secure cookies, CORS, Helmet security headers
-
-📊 Habit Tracking & Analytics
-
-Daily, weekly, monthly, and yearly habit tracking
-
-Interactive bar charts & line charts
-
-Heatmap view (GitHub / LeetCode style) for year-long activity
-
-Weekly navigation (previous / next week)
-
-Monthly comparisons between two months
-
-Smart analytics summaries
-
-Fully responsive charts (mobile → desktop)
-
-🗂️ Notes & Productivity System
-
-Folder → File → Card → Block hierarchy
-
-Drag-and-drop blocks across cards
-
-Real-time UI updates
-
-Highlight & auto-scroll to searched blocks
-
-Search across:
-
-Blocks
-
-Cards
-
-Files
-
-Folders
-
-Rich text link detection
-
-Minimal Trello-like canvas experience
-
-🎨 UI / UX
-
-Modern glassmorphism UI
-
-Fully responsive (mobile, tablet, desktop)
-
-Animated authentication screens
-
-Clean dashboards with Tailwind CSS
-
-Smooth transitions and micro-interactions
-
-Dark-friendly color palette
-
-🧱 Tech Stack
-Frontend
-
-React.js
-
-React Router v6
-
-Context API (Auth & Notes state)
-
-Tailwind CSS
-
-Chart.js
-
-DND Kit
-
-Axios
-
-Backend
-
-Node.js
-
-Express.js
-
-MongoDB + Mongoose
-
-JWT (Access + Refresh tokens)
-
-Nodemailer (OTP & reset emails)
-
-Google OAuth
-
-Rate Limiting
-
-Helmet, CORS, Cookie Parser
-
-Deployment
-
-Frontend: Vercel
-
-Backend: Render
-
-Database: MongoDB Atlas
-
-📁 Project Structure
 HabitMantra/
 │
 ├── backend/
-│   ├── controllers/
-│   ├── middleware/
-│   ├── models/
-│   ├── routes/
-│   ├── services/
-│   ├── utils/
-│   └── index.js
+│   ├── controllers/   # Route logic
+│   ├── middleware/    # Auth, Error handling, Rate limits
+│   ├── models/        # Mongoose Schemas
+│   ├── routes/        # API Endpoints
+│   ├── services/      # Business logic (Email, OAuth)
+│   └── utils/         # Helpers (Tokens, Date formatting)
 │
-├── frontend/
-│   ├── components/
-│   ├── context/
-│   ├── pages/
-│   ├── routes/
-│   ├── services/
-│   └── utils/
-│
-└── README.md
-
-🔒 Authentication Flow
-
-User signs up → OTP sent to email
-
-OTP verification → account activated
-
-Login generates access + refresh tokens
-
-Protected routes guarded using PrivateRoute
-
-Tokens stored securely
-
-Logout clears session
-
-Google OAuth available as alternative login
-
-📊 Analytics Flow
-
-Backend aggregates habit completion using MongoDB pipelines
-
-Data returned per:
-
-Week
-
-Month
-
-Year
-
-Frontend renders charts dynamically
-
-Heatmap adapts per month (28–31 days)
-
-Navigation controls for time-based exploration
-
-🧪 API Highlights
-Endpoint	Method	Description
-/auth/signup	POST	Signup with OTP
-/auth/verify-otp	POST	Verify email OTP
-/auth/login	POST	Login
-/auth/google	POST	Google Sign-In
-/analytics/weekly	GET	Weekly habit data
-/analytics/monthly	GET	Monthly habit data
-/analytics/yearly	GET	Yearly summary
-/notes/search	GET	Global search
-/notes/cards	CRUD	Card management
-🛡️ Security Considerations
-
-Passwords hashed with bcrypt
-
-OTP expiry enforcement
-
-Refresh token rotation
-
-Rate-limit protection
-
-Secure headers via Helmet
-
-Strict CORS policy
-
-Environment-based secrets
-
-⚙️ Environment Variables
-Backend
-MONGO_URI=
-JWT_SECRET=
-JWT_REFRESH_SECRET=
-EMAIL_USER=
-EMAIL_PASS=
-GOOGLE_CLIENT_ID=
-GOOGLE_CLIENT_SECRET=
-
-Frontend
-VITE_API_URL=
-VITE_GOOGLE_CLIENT_ID=
-
-🧠 What I Learned From This Project
-
-Designing secure authentication systems
-
-Handling CORS & deployment pitfalls
-
-Building scalable MongoDB analytics
-
-Creating complex responsive UIs
-
-Managing global app state cleanly
-
-Implementing drag-and-drop UX
-
-Deploying full-stack apps professionally
+└── frontend/
+    ├── components/    # Reusable UI components
+    ├── context/       # Global State (Auth, Notes)
+    ├── pages/         # Application Views
+    ├── services/      # API calls (Axios instances)
+    └── utils/         # Helpers (DnD logic, Chart config)
