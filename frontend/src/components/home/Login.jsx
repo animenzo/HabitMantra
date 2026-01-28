@@ -63,19 +63,6 @@ const handleSignup = async (e) => {
 };
 
 
-  const handleSignupChange = (e) => {
-  setSignupData({
-    ...signupData,
-    [e.target.name]: e.target.value,
-  });
-};
-
-const handleLoginChange = (e) => {
-  setLoginData({
-    ...loginData,
-    [e.target.name]: e.target.value,
-  });
-};
   // useEffect(() => {
   //   if (localStorage.getItem("token")) {
   //     navigate("/dashboard", { replace: true });

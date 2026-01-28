@@ -1,11 +1,18 @@
-import { useEffect, useState,useRef } from "react";
+import { useEffect, useState, useRef } from "react";
 import API from "../../../services/api";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useDroppable } from "@dnd-kit/core";
 import { useNotes } from "../../../context/NotesContext";
-import {linkify} from "../../../utils/linkify";
-export default function CardColumn({ card, onDelete, onUpdate, onCreateBlock, onUpdateBlock, onDeleteBlock }) {
+import { linkify } from "../../../utils/linkify";
+export default function CardColumn({
+  card,
+  onDelete,
+  onUpdate,
+  onCreateBlock,
+  onUpdateBlock,
+  onDeleteBlock,
+}) {
   const [title, setTitle] = useState(card.title);
   const [editingTitle, setEditingTitle] = useState(false);
   const [newBlock, setNewBlock] = useState("");
@@ -33,9 +40,11 @@ export default function CardColumn({ card, onDelete, onUpdate, onCreateBlock, on
       ref={setNodeRef}
       className={`
          w-full
-  sm:w-77.5
-  bg-white rounded-xl shadow p-3
-  transition-all
+        sm:w-77.5
+        h-77.5
+        overflow-y-scroll
+        bg-white rounded-xl shadow p-3
+          transition-all
         ${isOver ? "border-2 border-blue-400 scale-[1.03]" : ""}
       `}
     >
@@ -51,16 +60,30 @@ export default function CardColumn({ card, onDelete, onUpdate, onCreateBlock, on
             className="border rounded px-1 w-full"
           />
         ) : (
-          <h3 onDoubleClick={() => setEditingTitle(true)} className="font-medium">
+          <h3
+            onDoubleClick={() => setEditingTitle(true)}
+            className="font-medium"
+          >
             {card.title}
           </h3>
         )}
-        <button onClick={() => onDelete(card._id)} className="text-red-400">✕</button>
+        <button onClick={() => onDelete(card._id)} className="text-red-400">
+          ✕
+        </button>
       </div>
 
+         {/* ADD BLOCK */}
+      <input
+        value={newBlock}
+        onChange={(e) => setNewBlock(e.target.value)}
+        onKeyDown={(e) => e.key === "Enter" && createBlock()}
+        placeholder="+ New block"
+        className="w-full mb-2 sticky z-40 bg-white top-0 border rounded px-2 py-1 text-sm"
+      />
+
       {/* BLOCKS */}
-      <div className="space-y-2">
-        {(card.blocks || []).map(block => (
+      <div className="space-y-2 break-all">
+        {(card.blocks || []).map((block) => (
           <BlockItem
             key={block._id}
             block={block}
@@ -71,20 +94,12 @@ export default function CardColumn({ card, onDelete, onUpdate, onCreateBlock, on
         ))}
       </div>
 
-      {/* ADD BLOCK */}
-      <input
-        value={newBlock}
-        onChange={(e) => setNewBlock(e.target.value)}
-        onKeyDown={(e) => e.key === "Enter" && createBlock()}
-        placeholder="+ New block"
-        className="w-full mt-2 border rounded px-2 py-1 text-sm"
-      />
+   
     </div>
   );
 }
 
 /* ---------------- BLOCK ITEM ---------------- */
-
 
 function BlockItem({ block, cardId, onUpdate, onDelete }) {
   const [editing, setEditing] = useState(false);
@@ -95,20 +110,15 @@ function BlockItem({ block, cardId, onUpdate, onDelete }) {
 
   /* ---------------- DND ---------------- */
 
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-  } = useSortable({
-    id: block._id,
-    data: {
-      blockId: block._id,
-      cardId,
-      content: block.content,
-    },
-  });
+  const { setNodeRef, attributes, listeners, transform, transition } =
+    useSortable({
+      id: block._id,
+      data: {
+        blockId: block._id,
+        cardId,
+        content: block.content,
+      },
+    });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -137,37 +147,33 @@ function BlockItem({ block, cardId, onUpdate, onDelete }) {
   };
 
   /* ---------------- AUTO SCROLL + FLASH ---------------- */
-useEffect(() => {
-  if (highlightedBlock !== block._id || !elementRef.current) return;
-console.log("Highlight check:", highlightedBlock, block._id);
-  // ⏳ Wait for DOM + layout
-  requestAnimationFrame(() => {
-    setTimeout(() => {
-      elementRef.current?.scrollIntoView({
-        behavior: "smooth",
-        block: "center",
-      });
+  useEffect(() => {
+    if (highlightedBlock !== block._id || !elementRef.current) return;
+    console.log("Highlight check:", highlightedBlock, block._id);
+    // ⏳ Wait for DOM + layout
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        elementRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
 
-      // Flash highlight
-      elementRef.current?.classList.add(
-        "ring-2",
-        "ring-yellow-400",
-        "transition-all"
-      );
- 
-      const timer = setTimeout(() => {
-        elementRef.current?.classList.remove(
+        // Flash highlight
+        elementRef.current?.classList.add(
           "ring-2",
-          "ring-yellow-400"
+          "ring-yellow-400",
+          "transition-all",
         );
-        setHighlightedBlock(null);
-      }, 1200);
 
+        const timer = setTimeout(() => {
+          elementRef.current?.classList.remove("ring-2", "ring-yellow-400");
+          setHighlightedBlock(null);
+        }, 1200);
 
-      return () => clearTimeout(timer);
-    }, 50); // small delay = reliable
-  });
-}, [highlightedBlock, block._id, setHighlightedBlock]);
+        return () => clearTimeout(timer);
+      }, 50); // small delay = reliable
+    });
+  }, [highlightedBlock, block._id, setHighlightedBlock]);
 
   /* ---------------- RENDER ---------------- */
 
@@ -223,5 +229,3 @@ console.log("Highlight check:", highlightedBlock, block._id);
     </div>
   );
 }
-
-

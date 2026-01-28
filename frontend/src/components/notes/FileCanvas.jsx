@@ -171,10 +171,10 @@ export default function FileCanvas() {
       }}
       onDragCancel={() => setActiveBlock(null)}
     >
-      <div className="flex-1 p-3 sm:p-4 overflow-x-auto overflow-y-hidden">
-        <div className="flex flex-col sm:flex-row gap-4">
+      <div className="flex-1 p-3 sm:p-4 overflow-x-auto  overflow-y-hidden">
+        <div className="flex lg:grid lg:grid-cols-3 flex-col sm:flex-row gap-4">
            {/* Add card */}
-          <div className="w-full sm:w-64 bg-white rounded-xl shadow p-3">
+          <div className="w-full sm:w-64 bg-white rounded-xl  shadow p-3">
             <input
               value={newTitle}
               onChange={(e) => setNewTitle(e.target.value)}

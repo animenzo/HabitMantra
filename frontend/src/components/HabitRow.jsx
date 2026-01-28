@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { formatDate } from "../utils/dateHelpers";
 import API from "../services/api";
-
+import { FaTrashAlt } from "react-icons/fa";
+import { CiEdit } from "react-icons/ci";
 const HabitRow = ({ habit, days, year, month, refresh }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState(habit.name);
@@ -59,15 +60,15 @@ const HabitRow = ({ habit, days, year, month, refresh }) => {
               <span>{habit.name}</span>
               <button
                 onClick={() => setIsEditing(true)}
-                className="text-gray-400 hover:text-black"
+                className="text-gray-600 hover:text-black text-lg cursor-pointer"
               >
-                ✏️
+                <CiEdit />
               </button>
               <button
                 onClick={() => setShowDelete(true)}
-                className="text-red-400 hover:text-red-600"
+                className="text-red-500 hover:text-red-600 cursor-pointer"
               >
-                🗑️
+                <FaTrashAlt />
               </button>
             </>
           )}
