@@ -4,10 +4,12 @@ const Reminder = require("../models/Reminder");
 // ✅ Create reminder
 exports.createReminder = async (req, res) => {
   try {
+    console.log("REq",req.user)
     const reminder = await Reminder.create({
       ...req.body,
       user: req.user._id   // 🔥 attach logged-in user
     });
+    
 
     res.status(201).json(reminder);
 
