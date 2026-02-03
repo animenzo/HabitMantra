@@ -12,6 +12,7 @@ import { useState } from "react";
 import SmartInsights from "../components/SmartInsights";
 import HabitAnalytics from "../components/charts/HabitAnalytics";
 import GlassCard from "../components/charts/GlassCard";
+import Reminder from "../components/dashboard/Reminder";
 const Dashboard = () => {
   const [habits, setHabits] = useState([]);
   const today = new Date();
@@ -42,7 +43,10 @@ const Dashboard = () => {
         <WeeklyGoals />
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <SmartInsights />
+      <div>
+        <SmartInsights />
+        <Reminder />
+      </div>
 
         <GlassCard title="Habit Growth">
           <HabitAnalytics />

@@ -5,13 +5,17 @@ const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 require("dotenv").config();
 
+
+
 const habitRoutes = require("./routes/habitRoutes");
 const weeklyGoalRoutes = require("./routes/weeklyGoalRoutes");
 const dailyGoalRoutes = require("./routes/dailyGoalRoutes");
 const analyticsRoutes = require("./routes/analyticsRoutes");
 const notesRoutes = require("./routes/notesRoutes");
 const authRoutes = require("./routes/authRoutes");
-
+const reminderRoutes = require("./routes/reminderRoutes");
+const subscriptionRoutes = require("./routes/subscriptionRoutes");
+require('./utils/reminderCron')
 const app = express();
 
 /* ---------------- MIDDLEWARE ---------------- */
@@ -48,6 +52,9 @@ app.use("/weekly-goals", weeklyGoalRoutes);
 app.use("/daily-goals", dailyGoalRoutes);
 app.use("/analytics", analyticsRoutes);
 app.use("/notes", notesRoutes);
+app.use("/reminders", reminderRoutes);
+app.use("/subscriptions", subscriptionRoutes);
+
 
 
 /* ---------------- DATABASE ---------------- */
@@ -55,8 +62,9 @@ app.use("/notes", notesRoutes);
 async function connectDB() {
   try {
     await mongoose.connect(process.env.MONGO_URI)
-     
     console.log("MongoDB connected");
+     require('./utils/reminderCron')
+
   } catch (error) {
     console.log("MongoDB connection error:", error);
   }
