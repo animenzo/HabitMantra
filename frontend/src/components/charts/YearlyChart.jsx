@@ -88,7 +88,7 @@ export default function YearlyChart() {
             x: { grid: { display: false } },
             y: {
               beginAtZero: true,
-              ticks: { stepSize: 1 },
+              ticks: { stepSize: 6 },
               grid: { color: "rgba(0,0,0,0.05)" }
             }
           }

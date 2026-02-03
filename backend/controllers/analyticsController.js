@@ -260,25 +260,43 @@ exports.getSmartInsights = async (req, res) => {
     const habits = await Habit.find({ user: req.user.id });
 
     const dateSet = new Set();
+    let totalCompletions = 0;
+    let totalPossible = 0;
+
+    const habitStats = [];
 
     habits.forEach((h) => {
+      let completed = 0;
+
       h.progress?.forEach((value, date) => {
-        if (value === true) dateSet.add(date);
+        totalPossible++;
+
+        if (value === true) {
+          completed++;
+          totalCompletions++;
+          dateSet.add(date);
+        }
+      });
+
+      habitStats.push({
+        name: h.name,
+        completed,
       });
     });
 
+    const insights = [];
+
     if (dateSet.size === 0) {
-      return res.json({ insights: [] });
+      return res.json({ insights: ["Start completing habits to see insights 🚀"] });
     }
 
+    /* -------------------------
+       1️⃣ Weekday productivity
+    ------------------------- */
+
     const weekdayMap = {
-      Sunday: 0,
-      Monday: 0,
-      Tuesday: 0,
-      Wednesday: 0,
-      Thursday: 0,
-      Friday: 0,
-      Saturday: 0,
+      Sunday: 0, Monday: 0, Tuesday: 0,
+      Wednesday: 0, Thursday: 0, Friday: 0, Saturday: 0,
     };
 
     [...dateSet].forEach((date) => {
@@ -288,26 +306,121 @@ exports.getSmartInsights = async (req, res) => {
 
     const bestDay = Object.entries(weekdayMap).sort((a, b) => b[1] - a[1])[0];
 
-    const insights = [
-      {
-        type: "weekday",
-        message: `You are most productive on ${bestDay[0]}s.`,
-      },
-    ];
+    insights.push({
+      type: "weekday",
+      message: `You are most productive on ${bestDay[0]}s 🔥`,
+    });
+
+    /* -------------------------
+       2️⃣ Completion rate
+    ------------------------- */
+
+    const rate = Math.round((totalCompletions / totalPossible) * 100);
+
+    insights.push({
+      type: "rate",
+      message: `Your completion rate is ${rate}%`,
+    });
+
+    /* -------------------------
+       3️⃣ Best habit
+    ------------------------- */
+
+    const bestHabit = [...habitStats].sort((a, b) => b.completed - a.completed)[0];
+
+    insights.push({
+      type: "bestHabit",
+      message: `Your strongest habit is "${bestHabit.name}" 💪`,
+    });
+
+    /* -------------------------
+       4️⃣ Weak habit
+    ------------------------- */
+
+    const worstHabit = [...habitStats].sort((a, b) => a.completed - b.completed)[0];
+
+    insights.push({
+      type: "improve",
+      message: `"${worstHabit.name}" needs more attention ⚠️`,
+    });
+
+    /* -------------------------
+       5️⃣ Current streak
+    ------------------------- */
+
+    let streak = 0;
+    let today = new Date();
+
+    while (true) {
+      const d = today.toISOString().split("T")[0];
+      if (dateSet.has(d)) {
+        streak++;
+        today.setDate(today.getDate() - 1);
+      } else break;
+    }
+
+    insights.push({
+      type: "streak",
+      message: `Current streak: ${streak} days 🔁`,
+    });
+
+    /* -------------------------
+       6️⃣ Consistency feedback
+    ------------------------- */
 
     if (dateSet.size < 10) {
       insights.push({
         type: "warning",
-        message: "Your consistency is low. Try completing habits daily.",
+        message: "Consistency is low. Try daily small wins 📈",
+      });
+    } else if (rate > 80) {
+      insights.push({
+        type: "excellent",
+        message: "Excellent consistency! You're unstoppable 🚀",
       });
     } else {
       insights.push({
-        type: "positive",
-        message: "You are building strong consistency. Keep going!",
+        type: "good",
+        message: "Good progress. Keep pushing 💯",
       });
     }
 
+    /* -------------------------
+       7️⃣ Weekly trend
+    ------------------------- */
+
+    const last7Days = [];
+    for (let i = 0; i < 7; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      last7Days.push(d.toISOString().split("T")[0]);
+    }
+
+    const weekScore = last7Days.filter((d) => dateSet.has(d)).length;
+
+    insights.push({
+      type: "weekly",
+      message: `You completed habits on ${weekScore}/7 days this week 📅`,
+    });
+
+    /* -------------------------
+       8️⃣ Motivation
+    ------------------------- */
+
+    const motivational = [
+      "Small habits create big success 🌱",
+      "Consistency beats motivation 💯",
+      "You're improving every day 🚀",
+      "Keep stacking wins 🔥",
+    ];
+
+    insights.push({
+      type: "motivation",
+      message: motivational[Math.floor(Math.random() * motivational.length)],
+    });
+
     res.json({ insights });
+
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

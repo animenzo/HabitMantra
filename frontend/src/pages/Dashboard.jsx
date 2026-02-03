@@ -1,6 +1,6 @@
 import React from "react";
 import HabitForm from "../components/HabitForm";
-import HabitList from "../components/HabitList";
+
 import { useEffect } from "react";
 import API from "../services/api";
 import HabitTable from "../components/HabitTable";
@@ -27,7 +27,9 @@ const Dashboard = () => {
   }, []);
   return (
     <div className="min-h-screen p-6">
-      <h1 className="text-2xl font-semibold mb-6">My Habits</h1>
+     <h1 className="text-2xl font-bold mb-3 bg-linear-to-r from-indigo-600 to-red-500 bg-clip-text text-transparent animate-in slide-in-from-left-5 fade-in duration-700">
+  My Habits
+</h1>
       <MonthNavigation
         year={year}
         month={month}
@@ -38,14 +40,17 @@ const Dashboard = () => {
         <HabitForm refresh={load} />
         <HabitTable habits={habits} year={year} month={month} refresh={load} />
       </div>
-      <div className="flex gap-6 overflow-x-auto  mb-4 items-start">
+      <div className=" grid grid-cols-1 md:grid-cols-3 gap-3 overflow-x-auto  mb-4  items-start">
         <DailyGoals />
         <WeeklyGoals />
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start">
-      <div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-start ">
+      <div >
+        <div className="mb-3">
+          <Reminder />
+        </div>
+
         <SmartInsights />
-        <Reminder />
       </div>
 
         <GlassCard title="Habit Growth">
