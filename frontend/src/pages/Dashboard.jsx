@@ -1,15 +1,15 @@
 import React from "react";
-import HabitForm from "../components/HabitForm";
+import HabitForm from "../components/dashboard/HabitForm";
 
 import { useEffect } from "react";
 import API from "../services/api";
-import HabitTable from "../components/HabitTable";
-import MonthNavigation from "../components/MonthNavigation";
-import WeeklyGoals from "../components/WeeklyGoals";
-import DailyGoals from "../components/DailyGoals";
+import HabitTable from "../components/dashboard/HabitTable";
+import MonthNavigation from "../components/dashboard/MonthNavigation";
+import WeeklyGoals from "../components/dashboard/WeeklyGoals";
+import DailyGoals from "../components/dashboard/DailyGoals";
 // import Charts from './components/Charts'
 import { useState } from "react";
-import SmartInsights from "../components/SmartInsights";
+import SmartInsights from "../components/dashboard/SmartInsights";
 import HabitAnalytics from "../components/charts/HabitAnalytics";
 import GlassCard from "../components/charts/GlassCard";
 import Reminder from "../components/dashboard/Reminder";

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import API from "../services/api";
+import API from "../../services/api";
 import { MdLightbulb, MdTrendingUp, MdWarningAmber, MdEvent } from "react-icons/md";
 
 const styleMap = {
@@ -19,7 +19,7 @@ export default function SmartInsights() {
   if (!insights.length) return null;
 
   return (
-    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm space-y-4 overflow-y-scroll max-h-50">
       <h3 className="font-bold text-gray-800 flex items-center gap-2">
         <MdLightbulb className="text-yellow-500" /> Smart Insights
       </h3>

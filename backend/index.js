@@ -3,9 +3,8 @@ const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 require("dotenv").config();
-
-
 
 const habitRoutes = require("./routes/habitRoutes");
 const weeklyGoalRoutes = require("./routes/weeklyGoalRoutes");
@@ -22,7 +21,16 @@ const app = express();
 
 // Security headers
 app.use(helmet());
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 200,
+  message: "Too many requests, slow down 🚫",
+  standardHeaders: true,
+  legacyHeaders: false
+})
 
+app.use(globalLimiter);
+app.set("trust proxy", 1);
 // Parse JSON
 app.use(express.json());
 

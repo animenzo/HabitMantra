@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { formatDate } from "../utils/dateHelpers";
-import API from "../services/api";
+import { formatDate } from "../../utils/dateHelpers";
+import API from "../../services/api";
 import { 
   MdEdit, 
   MdDeleteOutline, 
@@ -59,7 +59,7 @@ const HabitRow = ({ habit, days, year, month, refresh }) => {
       <tr className="group border-b border-gray-100 hover:bg-gray-50/50 transition-colors">
         
         {/* ================= HABIT NAME (Sticky Left) ================= */}
-        <td className="sticky left-0 z-20 bg-gray-200 group-hover:bg-gray-50/50 px-1 py-1 border-r border-gray-100 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)]">
+        <td className="sticky left-0 z-20  group-hover:bg-gray-50/50 px-1 py-1 border-r border-gray-100 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)]">
           <div className="flex items-center justify-between  min-w-16 h-8">
             {isEditing ? (
               <input
@@ -83,10 +83,10 @@ const HabitRow = ({ habit, days, year, month, refresh }) => {
                 </span>
                 
                 {/* Actions (Visible on Hover) */}
-                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                <div className="flex items-center gap-1 lg:opacity-0 lg:group-hover:opacity-100 transition-opacity duration-200">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-md hover:bg-indigo-50 transition-colors"
+                    className="p-1.5 text-gray-400 hover:text-indigo-600 rounded-md bg-indigo-50 transition-colors"
                   >
                     <MdEdit size={18} />
                   </button>

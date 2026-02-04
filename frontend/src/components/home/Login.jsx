@@ -245,12 +245,13 @@ const handleSignup = async (e) => {
               </button>
             </div>
 
-            <a
-              href="#"
-              className="text-gray-800 text-sm no-underline my-4 hover:text-green-700"
-            >
-              Forgot your password?
-            </a>
+
+           <Link
+  to="/forgot-password"
+  className="text-sm text-blue-500 hover:underline"
+>
+  Forgot password?
+</Link>
             <button
               type="submit"
               disabled={loading}

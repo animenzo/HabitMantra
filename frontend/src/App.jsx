@@ -8,6 +8,8 @@ import Login from "./components/home/Login";
 import PrivateRoute from "./routes/PrivateRoutes";
 import Home from "./pages/Home";
 import { useAuth } from "./context/AuthContext";
+import ResetPassword from "./components/home/ResetPassword";
+import ForgotPassword from "./components/home/ForgotPassword";
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -32,6 +34,8 @@ function App() {
         {/* PUBLIC */}
         <Route path="/home" element={<Home />} />
         <Route path="/login" element={<Login />} />
+                <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* PROTECTED */}
         <Route
