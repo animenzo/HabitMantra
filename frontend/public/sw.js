@@ -53,8 +53,18 @@ self.addEventListener("activate", (event) => {
    FETCH → offline support
 ========================================= */
 self.addEventListener("fetch", (event) => {
+  const req = event.request;
+
+  // 🚨 NEVER intercept non-GET (POST/PUT/DELETE etc)
+  if (req.method !== "GET") {
+    return;
+  }
+
+  // ✅ Only cache static GET assets
   event.respondWith(
-    fetch(event.request).catch(() => caches.match(event.request))
+    caches.match(req).then((cached) => {
+      return cached || fetch(req);
+    })
   );
 });
 
