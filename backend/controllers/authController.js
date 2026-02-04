@@ -63,26 +63,38 @@ exports.login = async (req, res) => {
 
 
 exports.forgotPassword = async (req, res) => {
-  const { email } = req.body;
+  try {
+    console.log("Forgot password hit");
 
-  const user = await User.findOne({ email });
-  if (!user) return res.status(404).json({ message: "User not found" });
+    const { email } = req.body;
 
-  const { resetToken, hashedToken } = generateResetToken();
+    const user = await User.findOne({ email });
 
-  user.resetPasswordToken = hashedToken;
-  user.resetPasswordExpire = Date.now() + 10 * 60 * 1000; // 10 min
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
 
-  await user.save();
+    const { resetToken, hashedToken } = generateResetToken();
 
-  const resetUrl = `${process.env.CLIENT_URL}/reset-password/${resetToken}`;
+    user.resetPasswordToken = hashedToken;
+    user.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
 
-  await sendEmail(email, "Password Reset", `
-    Click to reset:
-    ${resetUrl}
-  `);
+    await user.save();
 
-  res.json({ message: "Reset link sent to email" });
+    const resetUrl = `${process.env.CLIENT_URL}/reset/${resetToken}`;
+
+    console.log("Sending email...");
+
+    await sendEmail(email, "Password Reset", resetUrl);
+
+    console.log("Email sent");
+
+    res.json({ message: "Reset link sent to email" });
+
+  } catch (err) {
+    console.error("❌ FORGOT ERROR:", err); // 🔥 IMPORTANT
+    res.status(500).json({ message: err.message });
+  }
 };
 
 
