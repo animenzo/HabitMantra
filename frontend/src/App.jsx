@@ -10,6 +10,7 @@ import Home from "./pages/Home";
 import { useAuth } from "./context/AuthContext";
 import ResetPassword from "./components/home/ResetPassword";
 import ForgotPassword from "./components/home/ForgotPassword";
+import MyDiary from "./pages/MyDiary";
 
 function App() {
   const { isAuthenticated } = useAuth();
@@ -52,6 +53,14 @@ function App() {
           element={
             <PrivateRoute>
               <NotesPage />
+            </PrivateRoute>
+          }
+        />
+           <Route
+          path="/mydiary"
+          element={
+            <PrivateRoute>
+              <MyDiary />
             </PrivateRoute>
           }
         />

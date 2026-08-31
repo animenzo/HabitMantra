@@ -64,7 +64,7 @@ exports.login = async (req, res) => {
 
 exports.forgotPassword = async (req, res) => {
   try {
-    console.log("Forgot password hit");
+    // console.log("Forgot password hit");
 
     const { email } = req.body;
 
@@ -83,7 +83,7 @@ exports.forgotPassword = async (req, res) => {
 
     const resetUrl = `${process.env.CLIENT_URL}/reset/${resetToken}`;
 
-    console.log("Sending email...");
+    // console.log("Sending email...");
 
     await sendEmail(email, "Password Reset", resetUrl);
 

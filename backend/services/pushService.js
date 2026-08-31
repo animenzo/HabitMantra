@@ -9,8 +9,6 @@ webPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY
 );
 
-
-
 /*
 ========================
 Helper: send single push

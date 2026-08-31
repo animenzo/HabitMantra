@@ -14,6 +14,7 @@ const notesRoutes = require("./routes/notesRoutes");
 const authRoutes = require("./routes/authRoutes");
 const reminderRoutes = require("./routes/reminderRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
+const diaryRoutes = require("./routes/diaryRoutes");
 
 const app = express();
 
@@ -62,7 +63,8 @@ app.use("/analytics", analyticsRoutes);
 app.use("/notes", notesRoutes);
 app.use("/reminders", reminderRoutes);
 app.use("/subscriptions", subscriptionRoutes);
-
+app.use("/diary", diaryRoutes);
+app.use("/diaries", diaryRoutes);
 
 
 /* ---------------- DATABASE ---------------- */
