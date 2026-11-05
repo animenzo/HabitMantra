@@ -27,7 +27,7 @@ function NotesContent() {
               <FiBookOpen size={16} />
             </div>
             <h1 className="text-base font-extrabold text-slate-900 tracking-tight hidden sm:block">
-              My Notes
+              MyBoards
             </h1>
           </div>
         </div>

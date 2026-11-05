@@ -17,11 +17,9 @@ import {
 
 const NAV_ITEMS = [
   { label: "Dashboard", path: "/dashboard", icon: FiLayout },
-  { label: "Timetable", path: "/timetable", icon: FiCalendar },
-  { label: "Roadmaps", path: "/roadmaps", icon: FiCompass },
   { label: "MyBoards", path: "/notespage", icon: FiFileText },
   { label: "MyDiaries", path: "/mydiary", icon: FiBookOpen },
-  { label: "English Coach", path: "/english-coach", icon: FiMic },
+  { label: "Profile", path: "/profile", icon: FiUser },
 ];
 
 export default function Navbar() {

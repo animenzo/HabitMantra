@@ -1,8 +1,10 @@
 # ==========================================
 # HabitMantra Git Ignore Configuration
+# Production Scope: Dashboard, MyBoards, MyDiaries, Profile
+# Excludes WIP: Roadmaps, English Coach, AI / Copilot, Timetable
 # ==========================================
 
-# Dependencies & Package Managers
+# Dependencies & Build Outputs
 node_modules/
 dist/
 dist-ssr/
@@ -14,7 +16,7 @@ build/
 .env.*
 *.local
 
-# Logs
+# Logs & Debuggers
 logs/
 *.log
 npm-debug.log*
@@ -44,10 +46,24 @@ Thumbs.db
 PRODUCT.md
 
 # ==========================================
-# WIP (Work-In-Progress Modules) - Kept Local
+# WIP: AI ASSISTANT & COPILOT (In Development)
 # ==========================================
+backend/services/ollamaService.js
+backend/services/aiActionService.js
+backend/services/pendingActionService.js
+backend/services/personalDataService.js
+backend/services/insightsService.js
+backend/controllers/assistantController.js
+backend/models/AssistantConversation.js
+backend/routes/assistantRoutes.js
+backend/scripts/
+backend/test_*.js
+frontend/src/components/assistant/
+frontend/src/hooks/useVoiceAssistant.js
 
-# --- English Coach & Speech Services ---
+# ==========================================
+# WIP: ENGLISH COACH & SPEECH ENGINE (In Development)
+# ==========================================
 speech_service/
 extension/
 frontend/public/audio-worklet-processor.js
@@ -64,32 +80,22 @@ backend/routes/englishRoutes.js
 backend/services/english*.js
 backend/services/geminiLiveProxy.js
 
-# --- AI Assistant & Gemini Tools ---
-frontend/src/components/assistant/
-frontend/src/hooks/useVoiceAssistant.js
-backend/controllers/assistantController.js
-backend/models/AssistantConversation.js
-backend/routes/assistantRoutes.js
-backend/services/aiActionService.js
-backend/services/pendingActionService.js
-backend/services/personalDataService.js
-backend/services/insightsService.js
-backend/scripts/
-backend/test_*.js
-
-# --- Roadmaps & Workflow Diagrams ---
-frontend/src/pages/RoadmapsWorkflowsPage.jsx
+# ==========================================
+# WIP: ROADMAPS & DIAGRAMS (In Development)
+# ==========================================
+frontend/src/pages/Roadmaps*.jsx
 frontend/src/components/roadmaps/
 backend/controllers/diagramController.js
 backend/models/Diagram.js
 backend/routes/diagramRoutes.js
 backend/services/diagram*.js
 
-# --- Timetable & Scheduling ---
-frontend/src/pages/TimetablePage.jsx
+# ==========================================
+# WIP: TIMETABLE & SCHEDULING (In Development)
+# ==========================================
+frontend/src/pages/Timetable*.jsx
 frontend/src/components/timetable/
 backend/controllers/timetableController.js
 backend/models/Timetable.js
 backend/routes/timetableRoutes.js
 backend/services/timetable*.js
-

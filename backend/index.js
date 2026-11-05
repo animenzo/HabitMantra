@@ -15,10 +15,6 @@ const authRoutes = require("./routes/authRoutes");
 const reminderRoutes = require("./routes/reminderRoutes");
 const subscriptionRoutes = require("./routes/subscriptionRoutes");
 const diaryRoutes = require("./routes/diaryRoutes");
-const englishRoutes = require("./routes/englishRoutes");
-const assistantRoutes = require("./routes/assistantRoutes");
-const timetableRoutes = require("./routes/timetableRoutes");
-const diagramRoutes = require("./routes/diagramRoutes");
 
 const app = express();
 
@@ -73,7 +69,7 @@ app.use(
 // Auth (PUBLIC)
 app.use("/auth", authRoutes);
 
-// Protected APIs
+// Protected APIs (Core Production Modules)
 app.use("/habits", habitRoutes);
 app.use("/weekly-goals", weeklyGoalRoutes);
 app.use("/daily-goals", dailyGoalRoutes);
@@ -83,11 +79,16 @@ app.use("/reminders", reminderRoutes);
 app.use("/subscriptions", subscriptionRoutes);
 app.use("/diary", diaryRoutes);
 app.use("/diaries", diaryRoutes);
-app.use("/english", englishRoutes);
-app.use("/assistant", assistantRoutes);
-app.use("/timetable", timetableRoutes);
-app.use("/diagrams", diagramRoutes);
 
+// Optional WIP Modules (safely guarded if excluded by .gitignore)
+try {
+  app.use("/english", require("./routes/englishRoutes"));
+  app.use("/assistant", require("./routes/assistantRoutes"));
+  app.use("/timetable", require("./routes/timetableRoutes"));
+  app.use("/diagrams", require("./routes/diagramRoutes"));
+} catch {
+  // In development modules excluded from repository
+}
 
 /* ---------------- DATABASE ---------------- */
 
