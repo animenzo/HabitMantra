@@ -29,66 +29,61 @@ const MonthNavigation = ({ year, month, setMonth, setYear }) => {
     setYear(today.getFullYear());
   };
 
-  // Keyboard navigation support
   useEffect(() => {
     const handleKeyDown = (e) => {
+      // Only navigate if not typing in an input/textarea
+      if (["INPUT", "TEXTAREA"].includes(document.activeElement?.tagName)) return;
       if (e.key === "ArrowLeft") goPrev();
       if (e.key === "ArrowRight") goNext();
     };
 
-    // Attach listener only if focus is generally on body (optional refinement)
-    // For now, global listener is fine for this context
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [month, year]); // Dependencies ensure state updates correctly
+  }, [month, year]);
 
-  const monthName = new Date(year, month - 1).toLocaleString("default", {
+  const monthName = new Date(year, month - 1).toLocaleString("en-US", {
     month: "long",
   });
 
   return (
-    <div className="flex items-center justify-between bg-white border border-gray-200 p-2 rounded-xl shadow-sm mb-6 max-w-lg mx-auto">
-      
-      {/* LEFT ARROW */}
+    <div className="flex items-center gap-1.5 sm:gap-2">
       <button
         onClick={goPrev}
+        aria-label="Previous Month"
         title="Previous Month (Left Arrow)"
-        className="p-2 rounded-lg text-gray-500 hover:text-indigo-600 bg-indigo-50  hover:bg-indigo-200 transition-colors"
+        className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/70 border border-slate-200/80 transition-colors"
       >
-        <MdChevronLeft size={24} />
+        <MdChevronLeft size={20} />
       </button>
 
-      {/* CENTER TEXT */}
-      <div className="flex flex-col items-center">
-        <h2 className="text-lg font-bold text-gray-800">
-          {monthName} <span className="text-gray-400 font-normal">{year}</span>
-        </h2>
+      <div className="px-3 py-1.5 text-center min-w-[140px] sm:min-w-[160px]">
+        <span className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+          {monthName}
+        </span>{" "}
+        <span className="text-sm sm:text-base font-medium text-slate-500">
+          {year}
+        </span>
       </div>
 
-      {/* RIGHT GROUP */}
-      <div className="flex items-center gap-1">
-        
-        {/* 'Today' button only shows if we aren't on current month */}
-        {!isCurrentMonth && (
-          <button
-            onClick={goToday}
-            title="Jump to Today"
-            className="hidden sm:flex items-center gap-1 px-3 py-1 text-xs font-medium text-indigo-600 bg-indigo-50  hover:bg-indigo-100 rounded-md transition-colors mr-1"
-          >
-            <MdToday size={14} />
-            Today
-          </button>
-        )}
-
-        {/* RIGHT ARROW */}
+      {!isCurrentMonth && (
         <button
-          onClick={goNext}
-          title="Next Month (Right Arrow)"
-          className="p-2 rounded-lg bg-indigo-50 text-gray-500 hover:text-indigo-600 hover:bg-indigo-200 transition-colors"
+          onClick={goToday}
+          title="Jump to Current Month"
+          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-xl border border-indigo-100 transition-colors"
         >
-          <MdChevronRight size={24} />
+          <MdToday size={14} />
+          Today
         </button>
-      </div>
+      )}
+
+      <button
+        onClick={goNext}
+        aria-label="Next Month"
+        title="Next Month (Right Arrow)"
+        className="p-1.5 sm:p-2 rounded-xl text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/70 border border-slate-200/80 transition-colors"
+      >
+        <MdChevronRight size={20} />
+      </button>
     </div>
   );
 };

@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const Folder = require("../models/notes/Folder");
 const File = require("../models/notes/File");
 const Card = require("../models/notes/Card");
@@ -287,12 +288,16 @@ exports.deleteBlock = async (req, res) => {
 
 /* ===================== SEARCH ===================== */
 
+const escapeRegex = (value = "") => value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
 exports.searchNotes = async (req, res) => {
   try {
     const q = req.query.q;
     if (!q) return res.json({ folders: [], files: [], cards: [], blocks: [] });
 
-    const regex = new RegExp(q, "i");
+    const safeQ = escapeRegex((q || "").trim());
+    if (!safeQ) return res.json({ folders: [], files: [], cards: [], blocks: [] });
+    const regex = new RegExp(safeQ, "i");
 
     const [folders, files, cards, blocks] = await Promise.all([
       Folder.find({ name: regex, user: req.user.id }).limit(5),

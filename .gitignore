@@ -1,0 +1,95 @@
+# ==========================================
+# HabitMantra Git Ignore Configuration
+# ==========================================
+
+# Dependencies & Package Managers
+node_modules/
+dist/
+dist-ssr/
+build/
+.cache/
+
+# Environment Variables & Secrets
+.env
+.env.*
+*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# OS & Editor Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Agent & Workspace Planning Tooling
+.agent/
+.agents/
+.codex/
+.impeccable/
+.planning/
+PRODUCT.md
+
+# ==========================================
+# WIP (Work-In-Progress Modules) - Kept Local
+# ==========================================
+
+# --- English Coach & Speech Services ---
+speech_service/
+extension/
+frontend/public/audio-worklet-processor.js
+frontend/public/robot-coach.png
+frontend/public/trophy.png
+frontend/src/pages/English*.jsx
+frontend/src/components/english/
+frontend/src/hooks/useEnglish*.js
+frontend/src/hooks/useGeminiLive.js
+frontend/src/hooks/useLocalEnglishSession.js
+backend/controllers/englishController.js
+backend/models/English*.js
+backend/routes/englishRoutes.js
+backend/services/english*.js
+backend/services/geminiLiveProxy.js
+
+# --- AI Assistant & Gemini Tools ---
+frontend/src/components/assistant/
+frontend/src/hooks/useVoiceAssistant.js
+backend/controllers/assistantController.js
+backend/models/AssistantConversation.js
+backend/routes/assistantRoutes.js
+backend/services/aiActionService.js
+backend/services/pendingActionService.js
+backend/services/personalDataService.js
+backend/services/insightsService.js
+backend/scripts/
+backend/test_*.js
+
+# --- Roadmaps & Workflow Diagrams ---
+frontend/src/pages/RoadmapsWorkflowsPage.jsx
+frontend/src/components/roadmaps/
+backend/controllers/diagramController.js
+backend/models/Diagram.js
+backend/routes/diagramRoutes.js
+backend/services/diagram*.js
+
+# --- Timetable & Scheduling ---
+frontend/src/pages/TimetablePage.jsx
+frontend/src/components/timetable/
+backend/controllers/timetableController.js
+backend/models/Timetable.js
+backend/routes/timetableRoutes.js
+backend/services/timetable*.js
+

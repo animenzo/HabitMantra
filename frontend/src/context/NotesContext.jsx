@@ -8,11 +8,12 @@ export const NotesProvider = ({ children }) => {
   const [files, setFiles] = useState({});
   const [cards, setCards] = useState({});
   const [blocks, setBlocks] = useState({});
- const [highlightedBlock, setHighlightedBlock] = useState(null);
+  const [highlightedBlock, setHighlightedBlock] = useState(null);
   const [activeFolder, setActiveFolder] = useState(null);
   const [activeFile, setActiveFile] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
-  /* 🔥 Load from localStorage FIRST */
+  /* Load from localStorage FIRST */
   useEffect(() => {
     const cached = loadNotesCache();
     if (cached) {
@@ -25,7 +26,7 @@ export const NotesProvider = ({ children }) => {
     }
   }, []);
 
-  /* 🔥 Save to localStorage on any change */
+  /* Save to localStorage on change */
   useEffect(() => {
     saveNotesCache({
       folders,
@@ -40,13 +41,22 @@ export const NotesProvider = ({ children }) => {
   return (
     <NotesContext.Provider
       value={{
-        folders, setFolders,
-        files, setFiles,
-        cards, setCards,
-        blocks, setBlocks,
-        activeFolder, setActiveFolder,
-        activeFile, setActiveFile,
-        highlightedBlock, setHighlightedBlock,
+        folders,
+        setFolders,
+        files,
+        setFiles,
+        cards,
+        setCards,
+        blocks,
+        setBlocks,
+        activeFolder,
+        setActiveFolder,
+        activeFile,
+        setActiveFile,
+        highlightedBlock,
+        setHighlightedBlock,
+        sidebarOpen,
+        setSidebarOpen,
       }}
     >
       {children}

@@ -7,11 +7,9 @@ export default function HabitTable({ habits, year, month, refresh }) {
     const totalDays = new Date(year, month, 0).getDate();
     const daysArray = [];
     const today = new Date();
-    
-    // Check if the viewed month is the current month (for highlighting)
-    const isCurrentMonth = 
-      today.getFullYear() === year && 
-      (today.getMonth() + 1) === month;
+
+    const isCurrentMonth =
+      today.getFullYear() === year && today.getMonth() + 1 === month;
 
     for (let i = 1; i <= totalDays; i++) {
       const date = new Date(year, month - 1, i);
@@ -29,45 +27,51 @@ export default function HabitTable({ habits, year, month, refresh }) {
 
   if (habits.length === 0) {
     return (
-      <div className="text-center py-12 bg-gray-50 rounded-xl border border-dashed border-gray-300">
-        <p className="text-gray-500">No habits tracked for this month.</p>
+      <div className="text-center py-16 px-4 bg-slate-50/60 rounded-2xl border border-dashed border-slate-300">
+        <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-xl">
+          🎯
+        </div>
+        <h4 className="text-base font-bold text-slate-800">No habits tracked yet</h4>
+        <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+          Add your first habit above to begin tracking daily consistency and building streaks.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="relative w-full rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden">
-      {/* Wrapper for horizontal scroll */}
+    <div className="relative w-full rounded-2xl border border-slate-200/90 bg-white overflow-hidden shadow-xs">
       <div className="overflow-x-auto custom-scrollbar">
         <table className="w-full border-collapse text-sm">
           <thead>
-            <tr className="bg-gray-50 border-b border-gray-200 h-14">
-              
-              {/* === Sticky Header: Habit Name === */}
-              <th className="sticky left-0 z-30 bg-gray-50 px-4 py-2 text-left font-semibold text-gray-700 min-w-40 shadow-[4px_0_8px_-4px_rgba(0,0,0,0.05)] border-r border-gray-200">
+            <tr className="bg-slate-50/80 border-b border-slate-200/80 h-14">
+              {/* Sticky Header: Habit Name */}
+              <th className="sticky left-0 z-30 bg-slate-50/95 px-4 py-2 text-left text-xs font-bold text-slate-700 min-w-48 shadow-[2px_0_6px_-2px_rgba(0,0,0,0.06)] border-r border-slate-200/80">
                 Habit
               </th>
 
-              {/* === Scrollable Headers: Days === */}
+              {/* Scrollable Headers: Days */}
               {days.map((d) => (
                 <th
                   key={d.day}
-                  className={`px-1 py-2 min-w-8 text-center font-normal
-                    ${d.isWeekend ? "bg-gray-50/50" : ""}
-                  `}
+                  className={`px-1 py-2 min-w-9 text-center font-normal select-none ${
+                    d.isWeekend ? "bg-slate-100/50" : ""
+                  }`}
                 >
                   <div className="flex flex-col items-center gap-1">
-                    <span className={`text-[10px] uppercase font-bold ${d.isToday ? 'text-indigo-600' : 'text-gray-400'}`}>
+                    <span
+                      className={`text-[10px] uppercase font-bold ${
+                        d.isToday ? "text-indigo-600 font-extrabold" : "text-slate-500"
+                      }`}
+                    >
                       {d.name}
                     </span>
                     <span
-                      className={`
-                        w-6 h-6 flex items-center justify-center rounded-full text-xs transition-colors
-                        ${d.isToday 
-                          ? "bg-indigo-600 text-white font-bold shadow-md shadow-indigo-200" 
-                          : "text-gray-700"
-                        }
-                      `}
+                      className={`w-6 h-6 flex items-center justify-center rounded-full text-xs transition-colors ${
+                        d.isToday
+                          ? "bg-indigo-600 text-white font-bold ring-2 ring-indigo-200"
+                          : "text-slate-700 font-medium"
+                      }`}
                     >
                       {d.day}
                     </span>
@@ -75,19 +79,19 @@ export default function HabitTable({ habits, year, month, refresh }) {
                 </th>
               ))}
 
-              {/* === Sticky Header: Progress === */}
-              <th className="sticky  z-30 bg-gray-50 px-4 py-2 text-center text-xs font-semibold text-gray-500 min-w-20 border-l border-gray-200">
+              {/* Sticky Header: Progress */}
+              <th className="sticky right-0 z-20 bg-slate-50/95 px-3 py-2 text-center text-xs font-bold text-slate-700 min-w-20 border-l border-slate-200/80 shadow-[-2px_0_6px_-2px_rgba(0,0,0,0.06)]">
                 Status
               </th>
             </tr>
           </thead>
 
-          <tbody className="divide-y divide-gray-100 bg-white">
+          <tbody className="divide-y divide-slate-100 bg-white">
             {habits.map((habit) => (
               <HabitRow
                 key={habit._id}
                 habit={habit}
-                days={days.map((d) => d.day)} // Pass just numbers to row
+                days={days.map((d) => d.day)}
                 year={year}
                 month={month}
                 refresh={refresh}

@@ -17,7 +17,8 @@ const diaryEntrySchema = new mongoose.Schema({
   },
 }, { timestamps: true });
 
-// Enable text search
-diaryEntrySchema.index({ title: 'text', content: 'text' });
+// Performance indexes for user queries
+diaryEntrySchema.index({ user: 1, updatedAt: -1 });
+diaryEntrySchema.index({ user: 1, createdAt: -1 });
 
 module.exports = mongoose.model('DiaryEntry', diaryEntrySchema);

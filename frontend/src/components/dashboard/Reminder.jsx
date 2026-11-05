@@ -1,43 +1,33 @@
 import React, { useEffect, useState } from "react";
-import API from "../../services/api"; // Ensure path is correct
+import API from "../../services/api";
 import { registerSW } from "../../registerSW";
-
-// Import icons from react-icons/md (Material Design)
-import { 
-  MdNotifications, 
-  MdAdd, 
-  MdClose, 
-  MdCheck, 
-  MdPlayArrow, 
-  MdPause, 
-  MdDelete, 
-  MdCalendarToday, 
+import {
+  MdNotifications,
+  MdAdd,
+  MdClose,
+  MdCheck,
+  MdPlayArrow,
+  MdPause,
+  MdDeleteOutline,
+  MdCalendarToday,
   MdAccessTime,
-  MdLocalFireDepartment 
+  MdLocalFireDepartment,
 } from "react-icons/md";
 
 const Reminder = () => {
-  // UI State
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [loading, setLoading] = useState(false);
-  
-  // Data State
   const [reminders, setReminders] = useState([]);
-  
-  // Form State
   const [title, setTitle] = useState("");
   const [time, setTime] = useState("");
-  const [repeatOption, setRepeatOption] = useState("0"); // "0" = None/Once
+  const [repeatOption, setRepeatOption] = useState("0");
   const [customInterval, setCustomInterval] = useState("");
 
-  /* =========================
-     FETCH
-  ========================= */
   const fetchReminders = async () => {
     setLoading(true);
     try {
       const res = await API.get("/reminders");
-      setReminders(res.data);
+      setReminders(res.data || []);
     } catch (error) {
       console.error("Failed to fetch reminders", error);
     } finally {
@@ -45,14 +35,10 @@ const Reminder = () => {
     }
   };
 
-  /* =========================
-     ADD
-  ========================= */
   const addReminder = async (e) => {
     e.preventDefault();
-    if (!title || !time) return;
+    if (!title.trim() || !time) return;
 
-    // Calculate final interval
     let finalInterval = 0;
     if (repeatOption === "custom") {
       finalInterval = Number(customInterval);
@@ -62,40 +48,48 @@ const Reminder = () => {
 
     try {
       await API.post("/reminders", {
-        title,
+        title: title.trim(),
         nextTriggerAt: new Date(time),
         repeatType: finalInterval > 0 ? "custom" : "once",
         intervalMinutes: finalInterval,
       });
 
-      // Reset Form
       setTitle("");
       setTime("");
       setRepeatOption("0");
       setCustomInterval("");
-      setIsFormOpen(false); // Close form to save space
+      setIsFormOpen(false);
       fetchReminders();
     } catch (error) {
       console.error("Error adding reminder", error);
     }
   };
 
-  /* =========================
-     ACTIONS
-  ========================= */
   const toggleReminder = async (id) => {
-    await API.patch(`/reminders/toggle/${id}`);
-    fetchReminders();
+    try {
+      await API.patch(`/reminders/toggle/${id}`);
+      fetchReminders();
+    } catch (error) {
+      console.error("Failed to toggle reminder", error);
+    }
   };
 
   const deleteReminder = async (id) => {
-    await API.delete(`/reminders/${id}`);
-    fetchReminders();
+    try {
+      await API.delete(`/reminders/${id}`);
+      fetchReminders();
+    } catch (error) {
+      console.error("Failed to delete reminder", error);
+    }
   };
 
   const completeReminder = async (id) => {
-    await API.patch(`/reminders/complete/${id}`);
-    fetchReminders();
+    try {
+      await API.patch(`/reminders/complete/${id}`);
+      fetchReminders();
+    } catch (error) {
+      console.error("Failed to complete reminder", error);
+    }
   };
 
   useEffect(() => {
@@ -103,169 +97,194 @@ const Reminder = () => {
     fetchReminders();
   }, []);
 
-  /* =========================
-     HELPERS
-  ========================= */
   const formatTimeDisplay = (dateString, interval) => {
     const date = new Date(dateString);
     if (interval > 0) {
       return (
-        <span className="flex items-center gap-1 text-blue-600 bg-blue-50 px-2 py-0.5 rounded text-xs font-medium">
-          <MdAccessTime size={14} /> Every {interval}m
+        <span className="inline-flex items-center gap-1 text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-md text-[11px] font-semibold border border-indigo-100">
+          <MdAccessTime size={13} /> Every {interval}m
         </span>
       );
     }
     return (
-      <span className="flex items-center gap-1 text-gray-500 text-xs">
-        <MdCalendarToday size={14} /> 
-        {date.toLocaleDateString()} {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+      <span className="inline-flex items-center gap-1 text-slate-500 text-xs font-medium">
+        <MdCalendarToday size={12} />
+        {date.toLocaleDateString("en-US", { month: "short", day: "numeric" })} at{" "}
+        {date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
       </span>
     );
   };
 
   return (
-    <div className="max-w-xl mx-auto w-full bg-white dark:bg-zinc-950 border border-gray-200 dark:border-zinc-800 rounded-xl shadow-sm overflow-hidden font-sans">
-      {/* ================= HEADER ================= */}
-      <div className="p-4 flex items-center justify-between bg-zinc-50 dark:bg-zinc-900 border-b border-gray-200 dark:border-zinc-800">
-        <div className="flex items-center gap-2">
-          <MdNotifications className="text-indigo-500" size={22} />
-          <h1 className="text-lg font-bold text-gray-800 dark:text-gray-100">Reminders</h1>
+    <div className="bg-white border border-slate-200/90 rounded-2xl p-5 shadow-xs">
+      {/* Header */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-indigo-50 text-indigo-700">
+            <MdNotifications size={18} />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 tracking-tight">Reminders</h3>
+            <p className="text-xs text-slate-500 mt-0.5">
+              {reminders.filter((r) => r.isActive).length} active alerts
+            </p>
+          </div>
         </div>
+
         <button
           onClick={() => setIsFormOpen(!isFormOpen)}
-          className={`p-2 rounded-full transition-colors ${
-            isFormOpen 
-              ? "bg-red-100 text-red-600 hover:bg-red-200" 
-              : "bg-indigo-100 text-indigo-600 hover:bg-indigo-200"
+          aria-label={isFormOpen ? "Close reminder form" : "Add new reminder"}
+          className={`p-2 rounded-xl transition-colors text-xs font-semibold flex items-center gap-1 ${
+            isFormOpen
+              ? "bg-slate-100 text-slate-700 hover:bg-slate-200"
+              : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100 border border-indigo-100"
           }`}
         >
-          {isFormOpen ? <MdClose size={20} /> : <MdAdd size={20} />}
+          {isFormOpen ? <MdClose size={16} /> : <MdAdd size={16} />}
+          <span className="hidden sm:inline">{isFormOpen ? "Cancel" : "New"}</span>
         </button>
       </div>
 
-      {/* ================= ADD FORM (Collapsible) ================= */}
+      {/* Collapsible Add Form */}
       {isFormOpen && (
-        <div className="p-4 bg-zinc-50/50 dark:bg-zinc-900/50 border-b border-gray-200 dark:border-zinc-800 animate-in slide-in-from-top-2 duration-200">
-          <form onSubmit={addReminder} className="flex flex-col gap-3">
-            <input
-              autoFocus
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="What needs to be done?"
-              className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
-            />
-            
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <form
+          onSubmit={addReminder}
+          className="mb-4 p-3.5 bg-slate-50 border border-slate-200/80 rounded-xl space-y-3"
+        >
+          <input
+            autoFocus
+            value={title}
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Reminder title (e.g. Drink Water, Evening Journal)..."
+            className="w-full px-3 py-2 text-xs font-medium bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 text-slate-800 placeholder:text-slate-400"
+          />
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                Trigger Time
+              </label>
               <input
                 type="datetime-local"
                 value={time}
                 onChange={(e) => setTime(e.target.value)}
-                className="w-full px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white text-gray-600"
+                className="w-full px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 text-slate-700 font-medium"
               />
+            </div>
 
-              <div className="flex gap-2">
+            <div>
+              <label className="block text-[11px] font-semibold text-slate-600 mb-1">
+                Recurrence
+              </label>
+              <div className="flex gap-1.5">
                 <select
                   value={repeatOption}
                   onChange={(e) => setRepeatOption(e.target.value)}
-                  className="flex-1 px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-zinc-800 dark:border-zinc-700 dark:text-white"
+                  className="flex-1 px-2.5 py-1.5 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 text-slate-700 font-medium"
                 >
-                  <option value="0">Don't Repeat</option>
-                  <option value="1">Every 1m</option>
-                  <option value="30">Every 30m</option>
-                  <option value="60">Every 1h</option>
+                  <option value="0">Once (No repeat)</option>
+                  <option value="1">Every 1 minute</option>
+                  <option value="30">Every 30 minutes</option>
+                  <option value="60">Every 1 hour</option>
                   <option value="1440">Daily</option>
-                  <option value="custom">Custom</option>
+                  <option value="custom">Custom minutes</option>
                 </select>
 
                 {repeatOption === "custom" && (
                   <input
                     type="number"
-                    placeholder="Min"
+                    min="1"
+                    placeholder="Mins"
                     value={customInterval}
                     onChange={(e) => setCustomInterval(e.target.value)}
-                    className="w-20 px-2 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-zinc-800 dark:border-zinc-700"
+                    className="w-18 px-2 py-1.5 text-xs bg-white border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 text-slate-700 font-medium"
                   />
                 )}
               </div>
             </div>
+          </div>
 
+          <div className="flex justify-end pt-1">
             <button
               type="submit"
-              className="mt-1 w-full bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold py-2 rounded-lg transition-colors shadow-sm"
+              disabled={!title.trim() || !time}
+              className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold rounded-lg disabled:bg-slate-200 disabled:text-slate-400 transition-colors shadow-xs"
             >
               Set Reminder
             </button>
-          </form>
-        </div>
+          </div>
+        </form>
       )}
 
-      {/* ================= LIST ================= */}
-      <div className="max-h-100 overflow-y-auto p-2 space-y-2 custom-scrollbar">
-        {loading && <p className="text-center text-gray-400 py-4 text-sm">Syncing...</p>}
+      {/* Reminder List */}
+      <div className="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+        {loading && reminders.length === 0 && (
+          <p className="text-center text-slate-400 py-6 text-xs font-medium">Syncing alerts...</p>
+        )}
 
         {!loading && reminders.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-4xl mb-2">😴</p>
-            <p className="text-gray-500 text-sm">No active reminders</p>
+          <div className="text-center py-7 px-3 border border-dashed border-slate-200 rounded-xl bg-slate-50/50">
+            <p className="text-slate-500 text-xs font-medium">No reminders scheduled.</p>
+            <p className="text-slate-400 text-[11px] mt-0.5">Stay on track by adding routine prompts.</p>
           </div>
         )}
 
         {reminders.map((r) => (
           <div
             key={r._id}
-            className={`
-              group flex items-center justify-between p-3 rounded-xl border transition-all duration-200
-              ${r.isActive 
-                ? "bg-white dark:bg-zinc-900 border-gray-100 dark:border-zinc-800 hover:border-indigo-200 shadow-sm" 
-                : "bg-gray-50 dark:bg-zinc-950 border-transparent opacity-75 grayscale-50"
-              }
-            `}
+            className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+              r.isActive
+                ? "bg-white border-slate-200/80 hover:border-indigo-200 shadow-xs"
+                : "bg-slate-50/70 border-slate-200/50 opacity-60"
+            }`}
           >
-            {/* Left: Info */}
-            <div className="flex-1 min-w-0 pr-4">
+            {/* Info */}
+            <div className="flex-1 min-w-0 pr-3">
               <div className="flex items-center gap-2 mb-1">
-                <h3 className={`font-semibold text-sm truncate ${!r.isActive && 'text-gray-500 line-through'}`}>
+                <span
+                  className={`font-semibold text-xs truncate ${
+                    !r.isActive ? "text-slate-400 line-through" : "text-slate-850"
+                  }`}
+                >
                   {r.title}
-                </h3>
+                </span>
                 {r.streak > 0 && (
-                  <span className="flex items-center text-[10px] font-bold text-orange-500 bg-orange-100 px-1.5 py-0.5 rounded-full">
-                    <MdLocalFireDepartment size={12} /> {r.streak}
+                  <span className="flex items-center gap-0.5 text-[10px] font-bold text-amber-700 bg-amber-50 px-1.5 py-0.2 rounded-md border border-amber-200/60">
+                    <MdLocalFireDepartment size={12} className="text-amber-600" /> {r.streak}
                   </span>
                 )}
               </div>
-              <div className="flex items-center">
-                {formatTimeDisplay(r.nextTriggerAt, r.intervalMinutes)}
-              </div>
+              <div>{formatTimeDisplay(r.nextTriggerAt, r.intervalMinutes)}</div>
             </div>
 
-            {/* Right: Actions (Icons) */}
-            <div className="flex items-center gap-1">
+            {/* Actions */}
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 onClick={() => completeReminder(r._id)}
-                title="Mark Done"
-                className="p-2 text-gray-400 hover:text-emerald-500 hover:bg-emerald-50 rounded-lg transition-colors"
+                title="Mark reminder as completed"
+                className="p-1.5 text-slate-400 hover:text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors"
               >
-                <MdCheck size={20} />
+                <MdCheck size={16} />
               </button>
 
               <button
                 onClick={() => toggleReminder(r._id)}
-                title={r.isActive ? "Pause" : "Resume"}
-                className={`p-2 rounded-lg transition-colors ${
-                  r.isActive 
-                    ? "text-gray-400 hover:text-amber-500 hover:bg-amber-50" 
-                    : "text-amber-500 bg-amber-50 hover:bg-amber-100"
+                title={r.isActive ? "Pause reminder" : "Resume reminder"}
+                className={`p-1.5 rounded-lg transition-colors ${
+                  r.isActive
+                    ? "text-slate-400 hover:text-amber-600 hover:bg-amber-50"
+                    : "text-amber-600 bg-amber-50 hover:bg-amber-100"
                 }`}
               >
-                {r.isActive ? <MdPause size={20} /> : <MdPlayArrow size={20} />}
+                {r.isActive ? <MdPause size={16} /> : <MdPlayArrow size={16} />}
               </button>
 
               <button
                 onClick={() => deleteReminder(r._id)}
-                title="Delete"
-                className="p-2 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="Delete reminder"
+                className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
               >
-                <MdDelete size={20} />
+                <MdDeleteOutline size={16} />
               </button>
             </div>
           </div>

@@ -32,7 +32,7 @@ exports.getDailyGoals = async (req, res) => {
  */
 exports.createDailyGoal = async (req, res) => {
   try {
-    const { title, date } = req.body;
+    const { title, date, project, priority, dueDate, source } = req.body;
 
     if (!title || !date) {
       return res.status(400).json({
@@ -43,6 +43,10 @@ exports.createDailyGoal = async (req, res) => {
     const goal = await DailyGoal.create({
       title,
       date,
+      project,
+      priority,
+      dueDate,
+      source,
       completed: false,
       user: req.user.id, // 🔑 owner
     });
@@ -89,7 +93,7 @@ exports.toggleDailyGoal = async (req, res) => {
  */
 exports.updateDailyGoal = async (req, res) => {
   try {
-    const { title } = req.body;
+    const { title, project, priority, dueDate, source } = req.body;
 
     if (!title || title.trim() === "") {
       return res.status(400).json({
@@ -97,9 +101,18 @@ exports.updateDailyGoal = async (req, res) => {
       });
     }
 
+    const updates = {
+      title: title.trim(),
+    };
+
+    if (project !== undefined) updates.project = project;
+    if (priority !== undefined) updates.priority = priority;
+    if (dueDate !== undefined) updates.dueDate = dueDate;
+    if (source !== undefined) updates.source = source;
+
     const goal = await DailyGoal.findOneAndUpdate(
       { _id: req.params.id, user: req.user.id },
-      { title },
+      updates,
       { new: true, runValidators: true }
     );
 

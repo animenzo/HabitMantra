@@ -13,6 +13,37 @@ const DailyGoalSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  project: {
+    type: String,
+    trim: true,
+    default: "",
+  },
+  priority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
+  },
+  dueDate: {
+    type: String,
+    default: "",
+  },
+  source: {
+    title: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    url: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+    capturedFrom: {
+      type: String,
+      trim: true,
+      default: "",
+    },
+  },
 
   // 🔑 OWNER
   user: {
